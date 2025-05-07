@@ -36,7 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.9.0
   flutter_dotenv: ^5.2.1
-  image_picker: ^1.1.2
+  file_picker: ^10.1.2
+  mime: ^2.0.0
 
 dev_dependencies:
   flutter_test:

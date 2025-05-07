@@ -1,9 +1,10 @@
-import 'dart:io';
-
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:untitled/auth/auth_service.dart';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen({super.key});
@@ -13,18 +14,45 @@ class AddItemScreen extends StatefulWidget {
 }
 
 class _AddItemScreenState extends State<AddItemScreen> {
-  File? image;
+  Uint8List? image;
+  String? fileName;
 
   Future pickImage() async {
     try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image == null) {
-        return;
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.image,
+      );
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          image = result.files.single.bytes!;
+          fileName = result.files.single.name;
+        });
       }
-      final imageTemp = File(image.path);
-      setState(() => this.image = imageTemp);
     } on PlatformException catch (e) {
       print("Failed to Pick Image $e");
+    }
+  }
+
+  Future<void> uploadImage(Uint8List? imageBytes, String? originalName) async {
+    final fileExtension = originalName!.split('.').last;
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
+
+    final mimeType = lookupMimeType(originalName);
+    try {
+      await AuthService().supabase.storage
+          .from('images')
+          .uploadBinary(
+            'uploads/$fileName',
+            image!,
+            fileOptions: FileOptions(contentType: mimeType),
+          );
+      final publicUrl = AuthService().supabase.storage
+          .from('images')
+          .getPublicUrl('uploads/$fileName');
+      print('✅ Upload successful: $publicUrl');
+    } catch (e) {
+      print('Upload failed: $e');
     }
   }
 
@@ -42,6 +70,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         ),
         actions: [
           GestureDetector(
+            onTap: () => uploadImage(image, fileName),
             child: Container(
               margin: EdgeInsets.only(right: 20),
               child: Text(
@@ -74,7 +103,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       ),
                       child:
                           image != null
-                              ? Image.file(image!, fit: BoxFit.cover)
+                              ? Image.memory(image!, fit: BoxFit.cover)
                               : Placeholder(),
                     ),
                     GestureDetector(
