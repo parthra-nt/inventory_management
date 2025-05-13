@@ -18,15 +18,22 @@ class LoginProvider extends ChangeNotifier {
       Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
     } catch (e) {
       print("Error Logging In $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Please Check Your OTP")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please Check Your OTP or Phone Number")),
+      );
     }
   }
 
-  void sendOTP() async {
-    toVerify = !toVerify;
-    notifyListeners();
-    await AuthService().supabase.auth.signInWithOtp(phone: phone.text);
+  void sendOTP(BuildContext context) async {
+    try {
+      await AuthService().supabase.auth.signInWithOtp(phone: phone.text);
+      toVerify = !toVerify;
+      notifyListeners();
+    } catch (e) {
+      print("Error Logging In $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please Enter Registered Phone Number")),
+      );
+    }
   }
 }
