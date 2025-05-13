@@ -16,9 +16,9 @@ class _ItemsPageState extends State<ItemsPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      Provider.of<ItemPageProvider>(context, listen: false).readItems();
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => Provider.of<ItemPageProvider>(context, listen: false).readItems(),
+    );
   }
 
   @override

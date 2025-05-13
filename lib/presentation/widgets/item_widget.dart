@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:untitled/presentation/screens/items_details_screen.dart';
+import 'package:untitled/providers/item_page_provider.dart';
 
 class ItemsWidget extends StatelessWidget {
   const ItemsWidget({
@@ -17,17 +19,21 @@ class ItemsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var q = int.parse(quantity);
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder:
-                (_) => ItemDetailsScreen(
-                  imageUrl: imageUrl,
-                  productName: name,
-                  quantity: quantity,
-                  id: id,
+                (_) => ChangeNotifierProvider(
+                  create: (_) => ItemPageProvider(q),
+                  child: ItemDetailsScreen(
+                    imageUrl: imageUrl,
+                    productName: name,
+                    quantity: quantity,
+                    id: id,
+                  ),
                 ),
           ),
         );

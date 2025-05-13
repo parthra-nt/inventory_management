@@ -22,6 +22,16 @@ class ItemDetailsScreen extends StatefulWidget {
 }
 
 class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
+  final TextEditingController stock = TextEditingController();
+  final TextEditingController nameUpdate = TextEditingController();
+
+  @override
+  void dispose() {
+    stock.dispose();
+    nameUpdate.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ItemPageProvider>(
@@ -32,11 +42,16 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               backgroundColor: Color(0xffd2dffb),
               title: Text("Item"),
               actions: [
-                Icon(Icons.edit_sharp),
                 Padding(
                   padding: const EdgeInsets.only(left: 30),
                   child: IconButton(
-                    onPressed: () => provider.bottomSheet2,
+                    onPressed:
+                        () => provider.bottomSheet2(
+                          context,
+                          widget.productName,
+                          widget.id,
+                          nameUpdate,
+                        ),
                     icon: Icon(Icons.more_vert),
                   ),
                 ),
@@ -47,10 +62,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 Column(
                   children: [
                     Container(
-                      padding: EdgeInsets.only(left: 15),
-                      height: 180,
+                      height: 250,
                       width: double.infinity,
                       color: Color(0xffd2dffb),
+                      child: Image.network(widget.imageUrl, fit: BoxFit.cover),
                     ),
                     Container(
                       color: Colors.white,
@@ -69,7 +84,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                   ),
                                 ),
                                 Text(
-                                  "123456789",
+                                  provider.productName,
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 20,
@@ -93,7 +108,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                       child: Row(
                         children: [
                           Text(
-                            "60",
+                            provider.quantity.toString(),
                             style: TextStyle(
                               fontSize: 24,
                               color: CupertinoColors.systemBlue,
@@ -114,9 +129,18 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                           GestureDetector(
                             onTap:
                                 () => provider.bottomSheet1(
+                                  context,
                                   widget.id,
-                                  stock,
-                                  stock,
+                                  () => stockDialog(
+                                    widget.productName,
+                                    provider.quantity.toString(),
+                                    isStockIn: true,
+                                  ),
+                                  () => stockDialog(
+                                    widget.productName,
+                                    provider.quantity.toString(),
+                                    isStockIn: false,
+                                  ),
                                 ),
                             child: Container(
                               margin: EdgeInsets.only(left: 120),
@@ -149,7 +173,58 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     );
   }
 
-  Widget stock() {
-    return AlertDialog();
+  Widget stockDialog(String name, String quantity, {bool isStockIn = true}) {
+    var provider = Provider.of<ItemPageProvider>(context, listen: false);
+    return AlertDialog(
+      title:
+          isStockIn
+              ? Text("Enter The Quantity to Add Stock")
+              : Text("Enter The Quantity to Remove from Stock"),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      actions: [
+        TextField(
+          controller: stock,
+          decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                width: 1,
+                color: CupertinoColors.activeBlue,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(width: 1, color: Colors.black),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                width: 1,
+                color: CupertinoColors.activeBlue,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+            onPressed: () async {
+              if (stock.text.isEmpty || int.tryParse(stock.text) == null) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("Enter valid quantity")));
+                return;
+              }
+              var input = int.parse(stock.text);
+              var q = int.parse(quantity);
+              await provider.updateStock(q, input, name, stockIn: isStockIn);
+              stock.clear();
+              Navigator.pop(context);
+            },
+            child: Text("Save"),
+          ),
+        ),
+      ],
+    );
   }
 }

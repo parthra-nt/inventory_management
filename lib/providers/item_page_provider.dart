@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/auth/auth_service.dart';
+import 'package:untitled/presentation/screens/items_page.dart';
+import 'package:untitled/presentation/widgets/delete_dialog.dart';
 
 class ItemPageProvider extends ChangeNotifier {
   List? itemsList;
@@ -10,12 +12,28 @@ class ItemPageProvider extends ChangeNotifier {
 
   int get quantity => _quantity;
 
+  ItemPageProvider(this._quantity);
+
   set quantity(int value) {
     _quantity = value;
     notifyListeners();
   }
 
-  void bottomSheet1(String id, Function() stockIn, Function() stockOut) {
+  String _productName = '';
+
+  String get productName => _productName;
+
+  set productName(String name) {
+    _productName = name;
+    notifyListeners();
+  }
+
+  void bottomSheet1(
+    BuildContext context,
+    String id,
+    Function() stockIn,
+    Function() stockOut,
+  ) {
     showModalBottomSheet(
       context: scaffoldKey.currentContext!,
       shape: const RoundedRectangleBorder(
@@ -101,7 +119,12 @@ class ItemPageProvider extends ChangeNotifier {
     );
   }
 
-  void bottomSheet2(String name) {
+  void bottomSheet2(
+    BuildContext context,
+    String name,
+    String id,
+    TextEditingController nameTC,
+  ) {
     showModalBottomSheet(
       context: scaffoldKey.currentContext!,
       shape: const RoundedRectangleBorder(
@@ -124,7 +147,55 @@ class ItemPageProvider extends ChangeNotifier {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: Text("Update Product Name"),
+                            actions: [
+                              TextField(
+                                controller: nameTC,
+                                decoration: InputDecoration(
+                                  hintText: "Enter New Name",
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: CupertinoColors.activeBlue,
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: CupertinoColors.activeBlue,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    await updateName(nameTC.text, id);
+                                    nameTC.clear();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Save"),
+                                ),
+                              ),
+                            ],
+                          ),
+                    );
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -153,7 +224,13 @@ class ItemPageProvider extends ChangeNotifier {
                 ),
                 GestureDetector(
                   onTap: () {
-                    deleteItem(name, context);
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => DeleteDialog(
+                            onTap: () => deleteItem(name, context),
+                          ),
+                    );
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -187,8 +264,6 @@ class ItemPageProvider extends ChangeNotifier {
     String productName, {
     bool stockIn = true,
   }) async {
-    isLoading = true;
-    notifyListeners();
     try {
       final value = stockIn ? quantity + input : quantity - input;
       await AuthService().supabase
@@ -201,18 +276,31 @@ class ItemPageProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Error Updating $e');
-    } finally {
-      isLoading = false;
+    }
+  }
+
+  Future<void> updateName(String name, String id) async {
+    try {
+      await AuthService().supabase
+          .from('products')
+          .update({'name': name})
+          .eq('id', id)
+          .select()
+          .single();
+      productName = name;
       notifyListeners();
+    } catch (e) {
+      print('Error Updating Name $e');
     }
   }
 
   Future<void> deleteItem(String name, BuildContext context) async {
     try {
       await AuthService().supabase.from('products').delete().eq('name', name);
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pop(context);
+      await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => ItemsPage()),
+      );
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Item Deletes")));
