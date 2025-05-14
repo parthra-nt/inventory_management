@@ -322,4 +322,16 @@ class ItemPageProvider extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  Future<void> addTransaction(int quantity, String id, String type) async {
+    try {
+      await AuthService().supabase.from('transaction').insert({
+        'product_id': id,
+        'quantity': quantity,
+        'type': type,
+      });
+    } catch (e) {
+      print("Error adding Transaction : $e");
+    }
+  }
 }

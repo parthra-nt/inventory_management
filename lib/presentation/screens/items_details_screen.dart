@@ -134,11 +134,13 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                   () => stockDialog(
                                     widget.productName,
                                     provider.quantity.toString(),
+                                    widget.id,
                                     isStockIn: true,
                                   ),
                                   () => stockDialog(
                                     widget.productName,
                                     provider.quantity.toString(),
+                                    widget.id,
                                     isStockIn: false,
                                   ),
                                 ),
@@ -173,7 +175,12 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     );
   }
 
-  Widget stockDialog(String name, String quantity, {bool isStockIn = true}) {
+  Widget stockDialog(
+    String name,
+    String quantity,
+    String id, {
+    bool isStockIn = true,
+  }) {
     var provider = Provider.of<ItemPageProvider>(context, listen: false);
     return AlertDialog(
       title:
@@ -217,9 +224,18 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               }
               var input = int.parse(stock.text);
               var q = int.parse(quantity);
-              await provider.updateStock(q, input, name, stockIn: isStockIn);
-              stock.clear();
-              Navigator.pop(context);
+              try {
+                await provider.updateStock(q, input, name, stockIn: isStockIn);
+                await provider.addTransaction(
+                  input,
+                  id,
+                  isStockIn ? 'in' : 'out',
+                );
+                stock.clear();
+                Navigator.pop(context);
+              } catch (e) {
+                print("Error $e");
+              }
             },
             child: Text("Save"),
           ),
