@@ -27,7 +27,7 @@ class ItemsWidget extends StatelessWidget {
           MaterialPageRoute(
             builder:
                 (_) => ChangeNotifierProvider(
-                  create: (_) => ItemPageProvider(q),
+                  create: (_) => ItemPageProvider(q, name),
                   child: ItemDetailsScreen(
                     imageUrl: imageUrl,
                     productName: name,

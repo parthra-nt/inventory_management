@@ -12,7 +12,7 @@ class ItemPageProvider extends ChangeNotifier {
 
   int get quantity => _quantity;
 
-  ItemPageProvider(this._quantity);
+  ItemPageProvider(this._quantity, this._productName);
 
   set quantity(int value) {
     _quantity = value;
@@ -228,7 +228,7 @@ class ItemPageProvider extends ChangeNotifier {
                       context: context,
                       builder:
                           (context) => DeleteDialog(
-                            onTap: () => deleteItem(name, context),
+                            onTap: () => deleteItem(id, context),
                           ),
                     );
                   },
@@ -294,16 +294,16 @@ class ItemPageProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteItem(String name, BuildContext context) async {
+  Future<void> deleteItem(String id, BuildContext context) async {
     try {
-      await AuthService().supabase.from('products').delete().eq('name', name);
+      await AuthService().supabase.from('products').delete().eq('id', id);
       await Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => ItemsPage()),
       );
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Item Deletes")));
+      ).showSnackBar(SnackBar(content: Text("Item Deleted")));
     } catch (e) {
       print("Error Deleting Item $e");
     }

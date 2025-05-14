@@ -48,7 +48,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                     onPressed:
                         () => provider.bottomSheet2(
                           context,
-                          widget.productName,
+                          provider.productName,
                           widget.id,
                           nameUpdate,
                         ),
