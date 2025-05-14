@@ -9,6 +9,7 @@ import 'package:untitled/providers/add_item_provider.dart';
 import 'package:untitled/providers/item_page_provider.dart';
 import 'package:untitled/providers/login_provider.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
@@ -37,6 +38,13 @@ class MyApp extends StatelessWidget {
                 ? HomeScreen()
                 : LoginScreen(),
       ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home:
+          AuthService().supabase.auth.currentUser != null
+              ? HomeScreen()
+              : LoginScreen(),
+
     );
   }
 }
