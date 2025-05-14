@@ -21,98 +21,81 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 50,
-                    width: 360,
-                    child: Form(
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                        controller: provider.phone,
-                        decoration: InputDecoration(
-                          hintText: "Enter Your Phone Number",
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 2,
+                    width: 300,
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please Enter Email';
+                        }
+                        return null;
+                      },
+                      controller: provider.emailController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(width: 1),
+                        ),
+                        labelText: 'Email',
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                  ),
+                  if (provider.otpSent)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: SizedBox(
+                        width: 300,
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(6),
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter OTP';
+                            }
+                            return null;
+                          },
+                          controller: provider.otpController,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(width: 1),
                             ),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 2,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(width: 1),
                             ),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 2,
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(width: 1),
                             ),
-                            borderRadius: BorderRadius.circular(5),
+                            labelText: 'OTP',
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  provider.toVerify
-                      ? SizedBox(
-                        height: 50,
-                        width: 360,
-                        child: Form(
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(6),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            controller: provider.otp,
-                            decoration: InputDecoration(
-                              hintText: "Enter Your OTP",
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
+                  const SizedBox(height: 20),
+                  provider.loading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                        onPressed:
+                            provider.otpSent
+                                ? () => provider.verifyOtp(context)
+                                : () => provider.sendOtp(context),
+                        child: Text(
+                          provider.otpSent ? 'Verify OTP' : 'Send OTP',
                         ),
-                      )
-                      : SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed:
-                        provider.toVerify
-                            ? () => provider.verifyOTP(context)
-                            : () => provider.sendOTP(context),
-                    child: Text(provider.toVerify ? "Verify" : "Send OTP"),
-                  ),
+                      ),
                 ],
               ),
             ),
