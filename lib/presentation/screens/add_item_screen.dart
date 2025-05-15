@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/providers/add_item_provider.dart';
 
@@ -16,57 +17,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
     return Consumer<AddItemProvider>(
       builder:
           (context, provider, child) => Scaffold(
-            appBar: AppBar(
-              title: Text(
-                "Add Item",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              actions: [
-                GestureDetector(
-                  onTap: () async {
-                    await provider.uploadImage(
-                      provider.image,
-                      provider.fileName,
-                    );
-                    await provider.addItemTable();
-                    await showDialog(
-                      context: context,
-                      builder:
-                          (context) => AlertDialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            title: Text("Item Added Successfully"),
-                            actions: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                },
-                                child: Text("ok"),
-                              ),
-                            ],
-                          ),
-                    );
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(right: 20),
-                    child: Text(
-                      "Save",
-                      style: TextStyle(
-                        color: CupertinoColors.activeBlue,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
             body: SingleChildScrollView(
               child: Center(
                 child: SizedBox(
@@ -76,20 +26,19 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     children: [
                       Row(
                         children: [
-                          Container(
+                          SizedBox(
                             height: 100,
                             width: 100,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.black12,
-                            ),
                             child:
                                 provider.image != null
                                     ? Image.memory(
                                       provider.image!,
                                       fit: BoxFit.cover,
                                     )
-                                    : Placeholder(),
+                                    : Image.asset(
+                                      "assets/images/items/empty_image.png",
+                                      fit: BoxFit.fitHeight,
+                                    ),
                           ),
                           GestureDetector(
                             onTap: provider.pickImage,
@@ -108,6 +57,45 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     color: CupertinoColors.systemBlue,
                                     fontWeight: FontWeight.w500,
                                   ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              await provider.uploadImage(
+                                provider.image,
+                                provider.fileName,
+                              );
+                              await provider.addItemTable();
+                              await showDialog(
+                                context: context,
+                                builder:
+                                    (context) => AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      title: Text("Item Added Successfully"),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("ok"),
+                                        ),
+                                      ],
+                                    ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(left: 250.h),
+                              child: Text(
+                                "Save",
+                                style: TextStyle(
+                                  color: CupertinoColors.activeBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),

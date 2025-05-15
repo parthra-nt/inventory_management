@@ -14,6 +14,7 @@ class ItemList extends StatelessWidget {
   final String itemName;
   final int itemCount;
   final String imageUrl;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -32,14 +33,10 @@ class ItemList extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Image.asset(
-                        "assets/images/items/macbook.png",
-                        height: 70.h,
-                        width: 70.w,
-                      ),
+                      Image.network(imageUrl, height: 70.h, width: 70.w),
                       SizedBox(width: 10.w),
                       Text(
-                        "Microsoft Surface 4",
+                        itemName,
                         style: TextStyle(
                           fontSize: maxWidth > 600 ? 20.sp : 14.sp,
                           color: Colors.black,
@@ -52,7 +49,7 @@ class ItemList extends StatelessWidget {
                 ),
                 // SizedBox(width: 220.w),
                 Text(
-                  "80",
+                  itemCount.toString(),
                   style: TextStyle(
                     color: AppColors.primaryColor,
                     decoration: TextDecoration.none,
