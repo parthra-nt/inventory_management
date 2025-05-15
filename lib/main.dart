@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:untitled/constants/app_constant.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/presentation/screens/home/home_screen.dart';
+import 'package:untitled/provider/bottom_nav_bar_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled/auth/auth_service.dart';
 import 'package:untitled/presentation/screens/home_screen.dart';
@@ -23,7 +27,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double width = constraints.maxWidth < 800 ? 800 : constraints.maxWidth;
+        double height =
+            constraints.maxHeight < 500 ? 500 : constraints.maxHeight;
+        return ScreenUtilInit(
+          designSize: Size(width, height),
+          child: MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (context) => BottomNavBarProvider(),
+              ),
+            ],
+            child: MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ItemPageProvider(0, '')),
         ChangeNotifierProvider(create: (_) => LoginProvider()),
@@ -36,6 +53,10 @@ class MyApp extends StatelessWidget {
                 ? HomeScreen()
                 : LoginScreen(),
       ),
+          ),
+        );
+      },
+
     );
   }
 }
