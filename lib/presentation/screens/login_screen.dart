@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/providers/login_provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:untitled/auth/auth_service.dart';
-import 'package:untitled/presentation/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -93,8 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       : ElevatedButton(
                         onPressed:
                             provider.otpSent
-                                ? () => provider.verifyOtp(context)
-                                : () => provider.sendOtp(context),
+                                ? () async => await provider.verifyOtp(context)
+                                : () async => await provider.sendOtp(context),
                         child: Text(
                           provider.otpSent ? 'Verify OTP' : 'Send OTP',
                         ),

@@ -9,11 +9,11 @@ class LoginProvider extends ChangeNotifier {
   bool otpSent = false;
   bool loading = false;
 
-  void sendOtp(BuildContext context) async {
+  Future<void> sendOtp(BuildContext context) async {
     loading = true;
     notifyListeners();
     try {
-      await AuthService().supabase.auth.signInWithOtp(
+      final response = await AuthService().supabase.auth.signInWithOtp(
         email: emailController.text,
       );
       otpSent = true;
@@ -21,6 +21,7 @@ class LoginProvider extends ChangeNotifier {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('OTP sent to your email')));
+      return response;
     } catch (e) {
       showError(e.toString(), context);
       print(e);
@@ -30,7 +31,7 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
-  void verifyOtp(BuildContext context) async {
+  Future<void> verifyOtp(BuildContext context) async {
     loading = true;
     notifyListeners();
     try {
