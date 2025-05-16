@@ -5,9 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled/auth/auth_service.dart';
 import 'package:untitled/constants/app_constant.dart';
-import 'package:untitled/presentation/screens/home/home_screen.dart';
 import 'package:untitled/presentation/screens/login_screen.dart';
+import 'package:untitled/presentation/screens/main_home_screen.dart';
 import 'package:untitled/providers/add_item_provider.dart';
+import 'package:untitled/providers/dashboard_provider.dart';
 import 'package:untitled/providers/item_page_provider.dart';
 import 'package:untitled/providers/login_provider.dart';
 
@@ -37,13 +38,14 @@ class MyApp extends StatelessWidget {
               ChangeNotifierProvider(create: (_) => ItemPageProvider(0, '')),
               ChangeNotifierProvider(create: (_) => LoginProvider()),
               ChangeNotifierProvider(create: (_) => AddItemProvider()),
+              ChangeNotifierProvider(create: (_) => DashboardProvider()),
             ],
             child: MaterialApp(
               theme: AppTheme.theme,
               debugShowCheckedModeBanner: false,
               home:
                   AuthService().supabase.auth.currentUser != null
-                      ? HomeWebScreen()
+                      ? MainHomeScreen()
                       : LoginScreen(),
             ),
           ),

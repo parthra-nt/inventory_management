@@ -19,6 +19,11 @@ class AppTheme {
         foregroundColor: AppColors.primaryColor,
       ),
     ),
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: Colors.white,
+      selectedIconTheme: IconThemeData(color: AppColors.primaryColor),
+      unselectedIconTheme: IconThemeData(color: Colors.black),
+    ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
       selectedItemColor: AppColors.primaryColor,

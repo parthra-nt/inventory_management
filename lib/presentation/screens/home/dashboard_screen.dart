@@ -1,50 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:untitled/models/stock_count_model.dart';
 import 'package:untitled/presentation/screens/add_item_screen.dart';
 import 'package:untitled/presentation/screens/home/widgets/count_column.dart';
 import 'package:untitled/presentation/screens/home/widgets/item_list.dart';
-import 'package:untitled/providers/item_page_provider.dart';
+import 'package:untitled/providers/dashboard_provider.dart';
 
 import '../../../constants/app_constant.dart';
 
-class HomeWebScreen extends StatefulWidget {
-  HomeWebScreen({super.key});
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
 
   @override
-  State<HomeWebScreen> createState() => _HomeWebScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _HomeWebScreenState extends State<HomeWebScreen> {
+class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => Provider.of<ItemPageProvider>(context, listen: false).readItems(),
+      (_) => Provider.of<DashboardProvider>(context, listen: false).readItems(),
     );
   }
 
-  final List<StockCountModel> stockCountModel = [
-    StockCountModel(
-      title: 'Today',
-      date: DateTime.now(),
-      total: 345,
-      stockIn: 344,
-      stockOut: 43,
-    ),
-    StockCountModel(
-      title: 'Yesterday',
-      date: DateTime.now().subtract(Duration(days: 1)),
-      total: 345,
-      stockIn: 344,
-      stockOut: 43,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<ItemPageProvider>(
+    return Consumer<DashboardProvider>(
       builder:
           (context, provider, child) => LayoutBuilder(
             builder: (context, constraints) {
@@ -57,13 +39,13 @@ class _HomeWebScreenState extends State<HomeWebScreen> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: maxWidth > 800 ? 500.w : 50.w,
-                    vertical: 50.h,
+                    vertical: 0.05.sh,
                   ),
                   child: Column(
                     children: [
                       /// Count Container
                       Container(
-                        height: maxWidth > 800 ? 120.h : 100.h,
+                        height: maxWidth > 800 ? 0.12.sh : 0.1.sh,
                         decoration: BoxDecoration(
                           color: AppColors.primaryColor,
                           borderRadius: BorderRadius.circular(15.r),
@@ -73,7 +55,9 @@ class _HomeWebScreenState extends State<HomeWebScreen> {
                           scrollDirection: Axis.horizontal,
                           itemCount: 2,
                           itemBuilder: (context, index) {
-                            return CountColumn(model: stockCountModel[index]);
+                            return CountColumn(
+                              model: provider.stockCountModel[index],
+                            );
                           },
                         ),
                       ),
@@ -121,60 +105,28 @@ class _HomeWebScreenState extends State<HomeWebScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        width: 380,
-                        child:
-                            provider.isLoading
-                                ? CircularProgressIndicator()
-                                : provider.itemsList?.isEmpty ?? true
-                                ? Text("Not Data")
-                                : SingleChildScrollView(
-                                  child: ListView.builder(
-                                    itemCount: provider.itemsList?.length,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemBuilder:
-                                        (context, index) => ItemList(
-                                          imageUrl:
-                                              provider
-                                                  .itemsList![index]['image_url'],
-                                          itemCount:
-                                              provider
-                                                  .itemsList![index]['quantity'],
-                                          itemName:
-                                              provider
-                                                  .itemsList![index]['name'],
-                                        ),
+                      provider.isLoading
+                          ? CircularProgressIndicator()
+                          : provider.productList?.isEmpty ?? true
+                          ? Text("Not Data")
+                          : SingleChildScrollView(
+                            child: ListView.builder(
+                              itemCount: provider.productList?.length,
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemBuilder:
+                                  (context, index) => ItemList(
+                                    imageUrl:
+                                        provider
+                                            .productList![index]['image_url'],
+                                    itemCount:
+                                        provider
+                                            .productList![index]['quantity'],
+                                    itemName:
+                                        provider.productList![index]['name'],
                                   ),
-                                ),
-                      ),
-
-                      /// Item List
-                      ItemList(
-                        itemName: "Microsoft Surface 4",
-                        itemCount: 80,
-                        imageUrl: "assets/images/items/macbook.png",
-                      ),
-                      ItemList(
-                        itemName: "Microsoft Surface 4",
-                        itemCount: 80,
-                        imageUrl: "assets/images/items/macbook.png",
-                      ),
-                      ItemList(
-                        itemName: "Microsoft Surface 4",
-                        itemCount: 80,
-                        imageUrl: "assets/images/items/macbook.png",
-                      ),
-                      ItemList(
-                        itemName: "Microsoft Surface 4",
-                        itemCount: 80,
-                        imageUrl: "assets/images/items/macbook.png",
-                      ),
-                      ItemList(
-                        itemName: "Microsoft Surface 4",
-                        itemCount: 80,
-                        imageUrl: "assets/images/items/macbook.png",
-                      ),
+                            ),
+                          ),
                     ],
                   ),
                 ),

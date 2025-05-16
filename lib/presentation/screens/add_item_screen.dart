@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/presentation/screens/main_home_screen.dart';
 import 'package:untitled/providers/add_item_provider.dart';
 
 class AddItemScreen extends StatefulWidget {
@@ -78,10 +79,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                       title: Text("Item Added Successfully"),
                                       actions: [
                                         ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            Navigator.pop(context);
-                                          },
+                                          onPressed:
+                                              () => Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (_) => MainHomeScreen(),
+                                                ),
+                                              ),
                                           child: Text("ok"),
                                         ),
                                       ],

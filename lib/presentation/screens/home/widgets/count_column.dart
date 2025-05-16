@@ -39,9 +39,9 @@ class CountColumn extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 16.h),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 StockCountRow(count: '${model.total}', title: "Total"),
                 StockCountRow(count: "${model.stockIn}", title: "Stock In"),

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/constants/app_constant.dart';
 import 'package:untitled/providers/item_page_provider.dart';
 
 class ItemDetailsScreen extends StatefulWidget {
@@ -35,141 +37,150 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ItemPageProvider>(
-      builder:
-          (context, provider, child) => Scaffold(
-            key: provider.scaffoldKey,
-            appBar: AppBar(
-              backgroundColor: Color(0xffd2dffb),
-              title: Text("Item"),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 30),
-                  child: IconButton(
-                    onPressed:
-                        () => provider.bottomSheet2(
-                          context,
-                          provider.productName,
-                          widget.id,
-                          nameUpdate,
-                        ),
-                    icon: Icon(Icons.more_vert),
+      builder: (context, provider, child) {
+        final width = MediaQuery.sizeOf(context).width;
+        final height = MediaQuery.sizeOf(context).height;
+        return Scaffold(
+          key: provider.scaffoldKey,
+          body: Center(
+            child: Container(
+              height: height * 0.31,
+              width: width * 0.625,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Color(0xffeaeaea),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100.h,
+                    width: 120.w,
+                    child: Image.network(
+                      provider.isUpdateImage
+                          ? provider.publicUrl
+                          : widget.imageUrl,
+                      fit: BoxFit.fill,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            body: Stack(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      height: 250,
-                      width: double.infinity,
-                      color: Color(0xffd2dffb),
-                      child: Image.network(widget.imageUrl, fit: BoxFit.cover),
-                    ),
-                    Container(
-                      color: Colors.white,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Product Name",
-                                  style: TextStyle(
-                                    color: Color(0xff66676e),
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                Text(
-                                  provider.productName,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Divider(
-                            color: Colors.grey,
-                            thickness: 1,
-                            endIndent: 1,
-                          ),
-                        ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Product Name",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                    Container(
-                      height: 80,
-                      color: Colors.white,
-                      padding: EdgeInsets.all(10),
-                      child: Row(
-                        children: [
-                          Text(
-                            provider.quantity.toString(),
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: CupertinoColors.systemBlue,
-                              fontWeight: FontWeight.w500,
+                      Text(
+                        provider.productName,
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 20.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(indent: 1, thickness: 1, color: Colors.black),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Quantity",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                      Text(
+                        provider.quantity.toString(),
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GestureDetector(
+                        onTap:
+                            () => provider.bottomSheet2(
+                              context,
+                              provider.productName,
+                              widget.id,
+                              widget.imageUrl,
+                              nameUpdate,
                             ),
+                        child: Container(
+                          margin: EdgeInsets.only(top: 20),
+                          padding: EdgeInsets.all(10),
+                          height: 50.h,
+                          width: 200.w,
+                          decoration: BoxDecoration(
+                            color: Color(0xffeaf0fd),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
+                          child: Center(
                             child: Text(
-                              "Quantity",
+                              "Edit Item",
                               style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.blueGrey,
-                                fontWeight: FontWeight.w300,
+                                color: Color(0xff4279f0),
+                                fontSize: 20.sp,
                               ),
                             ),
                           ),
-                          GestureDetector(
-                            onTap:
-                                () => provider.bottomSheet1(
-                                  context,
-                                  widget.id,
-                                  () => stockDialog(
-                                    widget.productName,
-                                    provider.quantity.toString(),
-                                    isStockIn: true,
-                                  ),
-                                  () => stockDialog(
-                                    widget.productName,
-                                    provider.quantity.toString(),
-                                    isStockIn: false,
-                                  ),
-                                ),
-                            child: Container(
-                              margin: EdgeInsets.only(left: 120),
-                              padding: EdgeInsets.all(10),
-                              height: 75,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                color: Color(0xffeaf0fd),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Stock In/Out",
-                                  style: TextStyle(
-                                    color: Color(0xff4279f0),
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      GestureDetector(
+                        onTap:
+                            () => provider.bottomSheet1(
+                              context,
+                              widget.id,
+                              () => stockDialog(
+                                widget.productName,
+                                provider.quantity.toString(),
+                                isStockIn: true,
+                              ),
+                              () => stockDialog(
+                                widget.productName,
+                                provider.quantity.toString(),
+                                isStockIn: false,
+                              ),
+                            ),
+                        child: Container(
+                          margin: EdgeInsets.only(left: 10, top: 20),
+                          padding: EdgeInsets.all(10),
+                          height: 50.h,
+                          width: 200.w,
+                          decoration: BoxDecoration(
+                            color: Color(0xffeaf0fd),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Stock In/Out",
+                              style: TextStyle(
+                                color: Color(0xff4279f0),
+                                fontSize: 20.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
+        );
+      },
     );
   }
 

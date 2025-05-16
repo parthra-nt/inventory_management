@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled/auth/auth_service.dart';
-import 'package:untitled/presentation/screens/home/home_screen.dart';
+import 'package:untitled/presentation/screens/main_home_screen.dart';
 
 class LoginProvider extends ChangeNotifier {
   final emailController = TextEditingController();
@@ -61,7 +61,7 @@ class LoginProvider extends ChangeNotifier {
       if (response.session != null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => HomeWebScreen()),
+          MaterialPageRoute(builder: (_) => MainHomeScreen()),
         );
         ScaffoldMessenger.of(
           context,
