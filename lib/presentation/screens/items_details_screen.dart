@@ -228,9 +228,15 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               }
               var input = int.parse(stock.text);
               var q = int.parse(quantity);
-              await provider.updateStock(q, input, name, stockIn: isStockIn);
-              stock.clear();
+              await provider.updateStock(
+                q,
+                input,
+                name,
+                widget.id,
+                stockIn: isStockIn,
+              );
               Navigator.pop(context);
+              stock.clear();
             },
             child: Text("Save"),
           ),

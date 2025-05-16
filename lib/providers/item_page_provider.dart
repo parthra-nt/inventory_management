@@ -332,7 +332,8 @@ class ItemPageProvider extends ChangeNotifier {
   Future<void> updateStock(
     int quantity,
     int input,
-    String productName, {
+    String productName,
+    String id, {
     bool stockIn = true,
   }) async {
     try {
@@ -344,6 +345,11 @@ class ItemPageProvider extends ChangeNotifier {
           .select()
           .single();
       this.quantity = value;
+      await AuthService().supabase.from('transaction').insert({
+        'product_id': id,
+        'quantity': input,
+        'type': stockIn ? 'in' : 'out',
+      });
       notifyListeners();
     } catch (e) {
       print('Error Updating $e');

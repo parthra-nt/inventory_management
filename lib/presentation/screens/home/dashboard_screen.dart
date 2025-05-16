@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:untitled/presentation/screens/add_item_screen.dart';
 import 'package:untitled/presentation/screens/home/widgets/count_column.dart';
 import 'package:untitled/presentation/screens/home/widgets/item_list.dart';
 import 'package:untitled/providers/dashboard_provider.dart';
@@ -19,8 +18,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    final provider = Provider.of<DashboardProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) => provider.readItems());
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => Provider.of<DashboardProvider>(context, listen: false).readItems(),
+      (_) => provider.getTotalStockInToday(),
+    );
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => provider.getTotalStockOutToday(),
+    );
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => provider.getTotalItem(),
     );
   }
 
@@ -56,7 +63,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           itemCount: 2,
                           itemBuilder: (context, index) {
                             return CountColumn(
-                              model: provider.stockCountModel[index],
+                              title: "Today",
+                              date: DateTime.now(),
+                              totalStock: provider.totalStock,
+                              totalStockIn: provider.totalStockIn,
+                              totalStockOut: provider.totalStockOut,
                             );
                           },
                         ),
@@ -79,27 +90,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 fontSize: maxWidth > 800 ? 20.sp : 14.sp,
                                 fontWeight: FontWeight.w500,
                                 decoration: TextDecoration.none,
-                              ),
-                            ),
-                            TextButton.icon(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => AddItemScreen(),
-                                    ),
-                                  ),
-                              label: Text(
-                                "Add item",
-                                style: TextStyle(
-                                  decoration: TextDecoration.none,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: maxWidth > 800 ? 20.sp : 14.sp,
-                                ),
-                              ),
-                              icon: Icon(
-                                Icons.add,
-                                size: maxWidth > 800 ? 22.sp : 14.sp,
                               ),
                             ),
                           ],
