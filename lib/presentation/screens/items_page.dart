@@ -42,31 +42,27 @@ class _ItemsPageState extends State<ItemsPage> {
           ),
           backgroundColor: Colors.grey.shade50,
           body: Center(
-            child: SizedBox(
-              width: 380,
-              child:
-                  provider.isLoading
-                      ? CircularProgressIndicator()
-                      : provider.itemsList?.isEmpty ?? true
-                      ? Text("Not Data")
-                      : SingleChildScrollView(
-                        child: ListView.builder(
-                          itemCount: provider.itemsList?.length,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder:
-                              (context, index) => ItemsWidget(
-                                imageUrl:
-                                    provider.itemsList![index]['image_url'],
-                                quantity:
-                                    provider.itemsList![index]['quantity']
-                                        .toString(),
-                                name: provider.itemsList![index]['name'],
-                                id: provider.itemsList![index]['id'],
-                              ),
-                        ),
+            child:
+                provider.isLoading
+                    ? CircularProgressIndicator()
+                    : provider.itemsList?.isEmpty ?? true
+                    ? Text("Not Data")
+                    : SingleChildScrollView(
+                      child: ListView.builder(
+                        itemCount: provider.itemsList?.length,
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder:
+                            (context, index) => ItemsWidget(
+                              imageUrl: provider.itemsList![index]['image_url'],
+                              quantity:
+                                  provider.itemsList![index]['quantity']
+                                      .toString(),
+                              name: provider.itemsList![index]['name'],
+                              id: provider.itemsList![index]['id'],
+                            ),
                       ),
-            ),
+                    ),
           ),
         ),
   );
