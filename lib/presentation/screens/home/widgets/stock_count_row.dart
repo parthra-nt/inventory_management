@@ -22,6 +22,7 @@ class StockCountRow extends StatelessWidget {
         double maxWidth =
             constraints.maxWidth > 600 ? 600 : constraints.maxWidth;
         return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,7 +33,6 @@ class StockCountRow extends StatelessWidget {
                     fontSize: maxWidth > 600 ? 24.sp : 14.sp,
                   ),
                 ),
-                SizedBox(height: 4.h),
                 Text(
                   title,
                   style: AppTextTheme.cardSmallTextStyle.copyWith(
@@ -41,13 +41,11 @@ class StockCountRow extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(width: 40.w),
             isLast
                 ? SizedBox()
                 : SizedBox(
                   height: 50.h,
                   child: VerticalDivider(
-                    width: 30.w,
                     color: Color(0xff5586EE),
                     indent: 5.h,
                     endIndent: 2.h,

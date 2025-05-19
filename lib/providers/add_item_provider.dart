@@ -54,15 +54,27 @@ class AddItemProvider extends ChangeNotifier {
 
   Future<void> addItemTable() async {
     try {
-      await AuthService().supabase.from('products').insert({
-        'name': name.text.trim(),
-        'quantity': quantity.text.trim(),
-        'image_url': publicUrl,
-      });
+      final parsedQuantity = int.parse(quantity.text.trim());
+      final productResponse =
+          await AuthService().supabase
+              .from('products')
+              .insert({
+                'name': name.text.trim(),
+                'quantity': parsedQuantity,
+                'image_url': publicUrl,
+              })
+              .select('id')
+              .single();
       name.clear();
       quantity.clear();
       image = null;
       fileName = null;
+      final String productId = productResponse['id'];
+      await AuthService().supabase.from('transaction').insert({
+        'product_id': productId,
+        'quantity': parsedQuantity,
+        'type': 'in',
+      });
       clearUrl();
       print("Data Added Successfully into Products");
     } catch (e) {

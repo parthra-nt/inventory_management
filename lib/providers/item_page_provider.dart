@@ -1,12 +1,23 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mime/mime.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled/auth/auth_service.dart';
-import 'package:untitled/presentation/screens/items_page.dart';
+import 'package:untitled/presentation/screens/main_home_screen.dart';
 import 'package:untitled/presentation/widgets/delete_dialog.dart';
+import 'package:untitled/providers/add_item_provider.dart';
 
 class ItemPageProvider extends ChangeNotifier {
+  final service = AuthService().supabase;
+  final AddItemProvider addItemProvider = AddItemProvider();
+  Uint8List? image;
+  String? fileName;
+  String publicUrl = '';
   List? itemsList;
   bool isLoading = false;
+  bool isUpdateImage = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   int _quantity = 0;
 
@@ -123,6 +134,7 @@ class ItemPageProvider extends ChangeNotifier {
     BuildContext context,
     String name,
     String id,
+    String imageUrl,
     TextEditingController nameTC,
   ) {
     showModalBottomSheet(
@@ -133,7 +145,7 @@ class ItemPageProvider extends ChangeNotifier {
       isDismissible: true,
       builder:
           (context) => Container(
-            height: 150,
+            height: 200,
             width: double.maxFinite,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -208,7 +220,66 @@ class ItemPageProvider extends ChangeNotifier {
                               color: Color(0xff3c75ef),
                               size: 30,
                             ),
-                            Text("Edit", style: TextStyle(fontSize: 20)),
+                            Text("Edit Name", style: TextStyle(fontSize: 20)),
+                          ],
+                        ),
+                      ),
+                      Icon(CupertinoIcons.right_chevron),
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: Colors.white38,
+                  indent: 1,
+                  endIndent: 1,
+                  thickness: 1,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: Text("Update Product Image"),
+                            actions: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Cancel"),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    await pickImage();
+                                    await deleteImage(imageUrl);
+                                    await updateImage(id);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Update"),
+                                ),
+                              ),
+                            ],
+                          ),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(right: 200),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.edit,
+                              color: Color(0xff3c75ef),
+                              size: 30,
+                            ),
+                            Text("Edit Image", style: TextStyle(fontSize: 20)),
                           ],
                         ),
                       ),
@@ -261,18 +332,24 @@ class ItemPageProvider extends ChangeNotifier {
   Future<void> updateStock(
     int quantity,
     int input,
-    String productName, {
+    String productName,
+    String id, {
     bool stockIn = true,
   }) async {
     try {
       final value = stockIn ? quantity + input : quantity - input;
-      await AuthService().supabase
+      await service
           .from('products')
           .update({'quantity': value})
           .eq('name', productName)
           .select()
           .single();
       this.quantity = value;
+      await AuthService().supabase.from('transaction').insert({
+        'product_id': id,
+        'quantity': input,
+        'type': stockIn ? 'in' : 'out',
+      });
       notifyListeners();
     } catch (e) {
       print('Error Updating $e');
@@ -281,7 +358,7 @@ class ItemPageProvider extends ChangeNotifier {
 
   Future<void> updateName(String name, String id) async {
     try {
-      await AuthService().supabase
+      await service
           .from('products')
           .update({'name': name})
           .eq('id', id)
@@ -296,10 +373,11 @@ class ItemPageProvider extends ChangeNotifier {
 
   Future<void> deleteItem(String id, BuildContext context) async {
     try {
-      await AuthService().supabase.from('products').delete().eq('id', id);
+      await service.from('transaction').delete().eq('product_id', id);
+      await service.from('products').delete().eq('id', id);
       await Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => ItemsPage()),
+        MaterialPageRoute(builder: (_) => MainHomeScreen()),
       );
       ScaffoldMessenger.of(
         context,
@@ -313,7 +391,7 @@ class ItemPageProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final response = await AuthService().supabase.from('products').select();
+      final response = await service.from('products').select();
       itemsList = response;
     } catch (e) {
       print("Error Fetching List $e");
@@ -321,5 +399,77 @@ class ItemPageProvider extends ChangeNotifier {
     }
     isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> deleteImage(String imageURL) async {
+    try {
+      final uri = Uri.parse(imageURL);
+      final segments = uri.pathSegments;
+      final bucketPathIndex = segments.indexOf('object') + 2;
+      if (bucketPathIndex < 2 || bucketPathIndex >= segments.length) {
+        throw Exception("Invalid image URL format.");
+      }
+
+      final filePath = segments.sublist(bucketPathIndex).join('/');
+      await service.storage.from('image').remove(['uploads/$filePath']);
+      print("Od Image Deleted Successfully");
+    } catch (e) {
+      print("Error Deleting Image from Bucket: $e");
+    }
+  }
+
+  Future<void> updateImage(String id) async {
+    try {
+      await service
+          .from('products')
+          .update({'image_url': publicUrl})
+          .eq('id', id)
+          .select()
+          .single();
+      isUpdateImage = true;
+      notifyListeners();
+    } catch (e) {
+      print("Error Updating Image: $e");
+    }
+  }
+
+  Future pickImage() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.image,
+      );
+      if (result != null && result.files.single.path != null) {
+        image = result.files.single.bytes!;
+        fileName = result.files.single.name;
+        notifyListeners();
+        await uploadImage(image, fileName);
+      }
+    } on PlatformException catch (e) {
+      print("Failed to Pick Image $e");
+    }
+  }
+
+  Future<void> uploadImage(Uint8List? imageBytes, String? originalName) async {
+    final fileExtension = originalName!.split('.').last;
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
+
+    final mimeType = lookupMimeType(originalName);
+    try {
+      await service.storage
+          .from('images')
+          .uploadBinary(
+            'uploads/$fileName',
+            image!,
+            fileOptions: FileOptions(contentType: mimeType),
+          );
+      publicUrl = service.storage
+          .from('images')
+          .getPublicUrl('uploads/$fileName');
+      notifyListeners();
+      print('✅ Upload successful: $publicUrl');
+    } catch (e) {
+      print('Upload failed: $e');
+    }
   }
 }

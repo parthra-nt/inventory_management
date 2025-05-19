@@ -24,6 +24,7 @@ class ItemList extends StatelessWidget {
         return Padding(
           padding: EdgeInsets.all(8),
           child: Container(
+            padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.r),
@@ -35,13 +36,15 @@ class ItemList extends StatelessWidget {
                     children: [
                       Image.network(imageUrl, height: 70.h, width: 70.w),
                       SizedBox(width: 10.w),
-                      Text(
-                        itemName,
-                        style: TextStyle(
-                          fontSize: maxWidth > 600 ? 20.sp : 14.sp,
-                          color: Colors.black,
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Text(
+                          itemName,
+                          style: TextStyle(
+                            fontSize: maxWidth > 600 ? 20.sp : 14.sp,
+                            color: Colors.black,
+                            decoration: TextDecoration.none,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -51,6 +54,7 @@ class ItemList extends StatelessWidget {
                 Text(
                   itemCount.toString(),
                   style: TextStyle(
+                    fontWeight: FontWeight.w800,
                     color: AppColors.primaryColor,
                     decoration: TextDecoration.none,
                     fontSize: maxWidth > 600 ? 20.sp : 14.sp,
