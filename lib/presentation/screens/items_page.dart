@@ -55,9 +55,7 @@ class _ItemsPageState extends State<ItemsPage> {
                         itemBuilder:
                             (context, index) => ItemsWidget(
                               imageUrl: provider.itemsList![index]['image_url'],
-                              quantity:
-                                  provider.itemsList![index]['quantity']
-                                      .toString(),
+                              quantity: provider.itemsList![index]['quantity'],
                               name: provider.itemsList![index]['name'],
                               id: provider.itemsList![index]['id'],
                             ),

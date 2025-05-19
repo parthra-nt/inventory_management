@@ -1,8 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:untitled/auth/auth_service.dart';
 import 'package:untitled/models/stock_count_model.dart';
 
 class DashboardProvider extends ChangeNotifier {
+  final TextEditingController stock = TextEditingController();
   bool isLoading = false;
   List? productList;
   List<StockCountModel> stockCountModel = [
@@ -72,7 +73,7 @@ class DashboardProvider extends ChangeNotifier {
           DateTime(now.year, now.month, now.day, 23, 59, 59).toIso8601String();
 
       final response = await AuthService().supabase
-          .from('transaction')
+          .from('transactions')
           .select('quantity, timestamp')
           .gte('timestamp', startOfDay)
           .lte('timestamp', endOfDay)
@@ -89,7 +90,7 @@ class DashboardProvider extends ChangeNotifier {
       notifyListeners();
       return total;
     } catch (e) {
-      print('Error fetching transaction data: $e');
+      print('Error fetching transactions data: $e');
       return 0;
     }
   }
@@ -103,7 +104,7 @@ class DashboardProvider extends ChangeNotifier {
           DateTime(now.year, now.month, now.day, 23, 59, 59).toIso8601String();
 
       final response = await AuthService().supabase
-          .from('transaction')
+          .from('transactions')
           .select('quantity, timestamp')
           .gte('timestamp', startOfDay)
           .lte('timestamp', endOfDay)
@@ -120,7 +121,7 @@ class DashboardProvider extends ChangeNotifier {
       notifyListeners();
       return total;
     } catch (e) {
-      print('Error fetching transaction data: $e');
+      print('Error fetching transactions data: $e');
       return 0;
     }
   }

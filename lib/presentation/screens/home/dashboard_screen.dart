@@ -1,8 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled/presentation/screens/add_item_screen.dart';
 import 'package:untitled/presentation/screens/home/widgets/count_column.dart';
-import 'package:untitled/presentation/screens/home/widgets/item_list.dart';
+import 'package:untitled/presentation/screens/home/widgets/dashboard_product_list.dart';
+import 'package:untitled/presentation/widgets/stock_dialog.dart';
 import 'package:untitled/providers/dashboard_provider.dart';
 
 import '../../../constants/app_constant.dart';
@@ -15,6 +18,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  Future<void> fetchAllDashboardData() async {
+    final provider = Provider.of<DashboardProvider>(context, listen: false);
+    await provider.readItems();
+    await provider.getTotalStockInToday(); // Assuming these are async
+    await provider.getTotalStockOutToday();
+    await provider.getTotalItem();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -64,14 +75,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                   SizedBox(height: 20.h),
-
-                  ///title and add item button
                   Padding(
-                    padding: EdgeInsets.only(
-                      left: 5.w,
-                      top: 12.w,
-                      bottom: 12.w,
-                    ),
+                    padding: const EdgeInsets.all(12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -81,6 +86,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w500,
                             decoration: TextDecoration.none,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap:
+                              () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => AddItemScreen(),
+                                ),
+                              ),
+                          child: Text(
+                            "+ Add Items",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: CupertinoColors.activeBlue,
+                            ),
                           ),
                         ),
                       ],
@@ -96,12 +117,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder:
-                              (context, index) => ItemList(
+                              (context, index) => DashboardProductList(
                                 imageUrl:
                                     provider.productList![index]['image_url'],
                                 itemCount:
                                     provider.productList![index]['quantity'],
                                 itemName: provider.productList![index]['name'],
+                                id: provider.productList![index]['id'],
+                                onTap1:
+                                    () => showDialog(
+                                      context: context,
+                                      builder:
+                                          (context) => StockDialog(
+                                            id:
+                                                provider
+                                                    .productList![index]['id'],
+                                            quantity:
+                                                provider
+                                                    .productList![index]['quantity'],
+                                            name:
+                                                provider
+                                                    .productList![index]['name'],
+                                            isStockIn: true,
+                                            stock: provider.stock,
+                                          ),
+                                    ),
+                                onTap2:
+                                    () => showDialog(
+                                      context: context,
+                                      builder:
+                                          (context) => StockDialog(
+                                            id:
+                                                provider
+                                                    .productList![index]['id'],
+                                            quantity:
+                                                provider
+                                                    .productList![index]['quantity'],
+                                            name:
+                                                provider
+                                                    .productList![index]['name'],
+                                            isStockIn: false,
+                                            stock: provider.stock,
+                                          ),
+                                    ),
                               ),
                         ),
                       ),

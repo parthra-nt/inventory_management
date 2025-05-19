@@ -2,10 +2,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mime/mime.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled/auth/auth_service.dart';
 import 'package:untitled/presentation/screens/main_home_screen.dart';
+import 'package:untitled/presentation/widgets/bottom_sheet_option.dart';
 import 'package:untitled/presentation/widgets/delete_dialog.dart';
 import 'package:untitled/providers/add_item_provider.dart';
 
@@ -41,7 +44,7 @@ class ItemPageProvider extends ChangeNotifier {
 
   void bottomSheet1(
     BuildContext context,
-    String id,
+    int id,
     Function() stockIn,
     Function() stockOut,
   ) {
@@ -50,78 +53,105 @@ class ItemPageProvider extends ChangeNotifier {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      isDismissible: true,
+      backgroundColor: Colors.white,
       builder:
-          (context) => Container(
-            height: 150,
-            width: double.maxFinite,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            padding: EdgeInsets.all(20),
+          (context) => Padding(
+            padding: const EdgeInsets.all(20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                GestureDetector(
-                  onTap:
-                      () => showDialog(
-                        context: context,
-                        builder: (context) => stockIn(),
-                      ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 200),
-                        child: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.arrow_down_square,
-                              color: Color(0xff3c75ef),
-                              size: 40,
-                            ),
-                            Text("Stock In", style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
-                      ),
-                      Icon(CupertinoIcons.right_chevron),
-                    ],
+                Container(
+                  width: 40.w,
+                  height: 5.h,
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                Divider(
-                  color: Colors.white38,
-                  indent: 1,
-                  endIndent: 1,
-                  thickness: 1,
-                ),
-                GestureDetector(
-                  onTap:
-                      () => showDialog(
-                        context: context,
-                        builder: (context) => stockOut(),
-                      ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 200),
-                        child: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.arrow_up_square,
-                              color: Color(0xffdc3a3a),
-                              size: 40,
-                            ),
-                            Text("Stock Out", style: TextStyle(fontSize: 20)),
-                          ],
+                SizedBox(height: 20.h),
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) => stockIn(),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12.h,
+                      horizontal: 8.w,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffe6f0ff),
+                            shape: BoxShape.circle,
+                          ),
+                          child: SvgPicture.asset(
+                            "assets/images/stockIn.svg",
+                            height: 20.h,
+                            width: 20.w,
+                            theme: SvgTheme(currentColor: Color(0xff3c75ef)),
+                          ),
                         ),
-                      ),
-                      Icon(CupertinoIcons.right_chevron),
-                    ],
+                        SizedBox(width: 16.w),
+                        Text(
+                          "Stock In",
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Divider(height: 32.h, thickness: 1, color: Colors.black12),
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) => stockOut(),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12.h,
+                      horizontal: 8.w,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffffe6e6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: SvgPicture.asset(
+                            "assets/images/stockOut.svg",
+                            height: 20.h,
+                            width: 20.w,
+                            theme: SvgTheme(currentColor: Color(0xffdc3a3a)),
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        Text(
+                          "Stock Out",
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -133,7 +163,7 @@ class ItemPageProvider extends ChangeNotifier {
   void bottomSheet2(
     BuildContext context,
     String name,
-    String id,
+    int id,
     String imageUrl,
     TextEditingController nameTC,
   ) {
@@ -142,159 +172,111 @@ class ItemPageProvider extends ChangeNotifier {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      isDismissible: true,
+      backgroundColor: Colors.white,
       builder:
-          (context) => Container(
-            height: 200,
-            width: double.maxFinite,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            padding: EdgeInsets.all(20),
+          (context) => Padding(
+            padding: const EdgeInsets.all(20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                GestureDetector(
+                // Drag Handle
+                Container(
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                /// Edit Name
+                BottomSheetOption(
+                  icon: Icons.edit,
+                  label: "Edit Name",
+                  color: Color(0xff3c75ef),
                   onTap: () {
+                    Navigator.pop(context);
                     showDialog(
                       context: context,
                       builder:
                           (context) => AlertDialog(
                             title: Text("Update Product Name"),
-                            actions: [
-                              TextField(
-                                controller: nameTC,
-                                decoration: InputDecoration(
-                                  hintText: "Enter New Name",
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: CupertinoColors.activeBlue,
-                                    ),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: CupertinoColors.activeBlue,
-                                    ),
+                            content: TextField(
+                              controller: nameTC,
+                              decoration: InputDecoration(
+                                hintText: "Enter New Name",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: CupertinoColors.activeBlue,
+                                    width: 1,
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    await updateName(nameTC.text, id);
-                                    nameTC.clear();
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text("Save"),
-                                ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("Cancel"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await updateName(nameTC.text, id);
+                                  nameTC.clear();
+                                  Navigator.pop(context);
+                                },
+                                child: Text("Save"),
                               ),
                             ],
                           ),
                     );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 200),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.edit,
-                              color: Color(0xff3c75ef),
-                              size: 30,
-                            ),
-                            Text("Edit Name", style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
-                      ),
-                      Icon(CupertinoIcons.right_chevron),
-                    ],
-                  ),
                 ),
-                Divider(
-                  color: Colors.white38,
-                  indent: 1,
-                  endIndent: 1,
-                  thickness: 1,
-                ),
-                GestureDetector(
+
+                Divider(thickness: 1, color: Colors.black12),
+
+                /// Edit Image
+                BottomSheetOption(
+                  icon: Icons.image_outlined,
+                  label: "Edit Image",
+                  color: Color(0xff3c75ef),
                   onTap: () {
+                    Navigator.pop(context);
                     showDialog(
                       context: context,
                       builder:
                           (context) => AlertDialog(
                             title: Text("Update Product Image"),
                             actions: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text("Cancel"),
-                                ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("Cancel"),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    await pickImage();
-                                    await deleteImage(imageUrl);
-                                    await updateImage(id);
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text("Update"),
-                                ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await pickImage();
+                                  await deleteImage(imageUrl);
+                                  await updateImage(id);
+                                  Navigator.pop(context);
+                                },
+                                child: Text("Update"),
                               ),
                             ],
                           ),
                     );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 200),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.edit,
-                              color: Color(0xff3c75ef),
-                              size: 30,
-                            ),
-                            Text("Edit Image", style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
-                      ),
-                      Icon(CupertinoIcons.right_chevron),
-                    ],
-                  ),
                 ),
-                Divider(
-                  color: Colors.white38,
-                  indent: 1,
-                  endIndent: 1,
-                  thickness: 1,
-                ),
-                GestureDetector(
+                Divider(thickness: 1, color: Colors.black12),
+                BottomSheetOption(
+                  icon: CupertinoIcons.delete,
+                  label: "Delete",
+                  color: Color(0xffdc3a3a),
                   onTap: () {
+                    Navigator.pop(context);
                     showDialog(
                       context: context,
                       builder:
@@ -303,25 +285,6 @@ class ItemPageProvider extends ChangeNotifier {
                           ),
                     );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 200),
-                        child: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.delete,
-                              color: Color(0xffdc3a3a),
-                              size: 30,
-                            ),
-                            Text("Delete", style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
-                      ),
-                      Icon(CupertinoIcons.right_chevron),
-                    ],
-                  ),
                 ),
               ],
             ),
@@ -333,7 +296,7 @@ class ItemPageProvider extends ChangeNotifier {
     int quantity,
     int input,
     String productName,
-    String id, {
+    int id, {
     bool stockIn = true,
   }) async {
     try {
@@ -345,7 +308,7 @@ class ItemPageProvider extends ChangeNotifier {
           .select()
           .single();
       this.quantity = value;
-      await AuthService().supabase.from('transaction').insert({
+      await AuthService().supabase.from('transactions').insert({
         'product_id': id,
         'quantity': input,
         'type': stockIn ? 'in' : 'out',
@@ -356,7 +319,7 @@ class ItemPageProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateName(String name, String id) async {
+  Future<void> updateName(String name, int id) async {
     try {
       await service
           .from('products')
@@ -371,9 +334,9 @@ class ItemPageProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteItem(String id, BuildContext context) async {
+  Future<void> deleteItem(int id, BuildContext context) async {
     try {
-      await service.from('transaction').delete().eq('product_id', id);
+      await service.from('transactions').delete().eq('product_id', id);
       await service.from('products').delete().eq('id', id);
       await Navigator.pushReplacement(
         context,
@@ -418,7 +381,7 @@ class ItemPageProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateImage(String id) async {
+  Future<void> updateImage(int id) async {
     try {
       await service
           .from('products')

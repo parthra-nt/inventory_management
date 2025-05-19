@@ -42,6 +42,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   provider: ^6.1.5
   http: ^1.4.0
+  flutter_svg: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -83,9 +84,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-     - family: Inter
-       fonts:
-          - asset: assets/fonts/Inter_24pt-Regular.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter_24pt-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

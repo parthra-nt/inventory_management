@@ -70,7 +70,7 @@ class AddItemProvider extends ChangeNotifier {
       image = null;
       fileName = null;
       final String productId = productResponse['id'];
-      await AuthService().supabase.from('transaction').insert({
+      await AuthService().supabase.from('transactions').insert({
         'product_id': productId,
         'quantity': parsedQuantity,
         'type': 'in',

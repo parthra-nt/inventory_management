@@ -13,13 +13,12 @@ class ItemsWidget extends StatelessWidget {
   });
 
   final String imageUrl;
-  final String id;
+  final int id;
   final String name;
-  final String quantity;
+  final int quantity;
 
   @override
   Widget build(BuildContext context) {
-    var q = int.parse(quantity);
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -27,7 +26,7 @@ class ItemsWidget extends StatelessWidget {
           MaterialPageRoute(
             builder:
                 (_) => ChangeNotifierProvider(
-                  create: (_) => ItemPageProvider(q, name),
+                  create: (_) => ItemPageProvider(quantity, name),
                   child: ItemDetailsScreen(
                     imageUrl: imageUrl,
                     productName: name,
@@ -68,7 +67,7 @@ class ItemsWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 20),
               child: Text(
-                quantity,
+                quantity.toString(),
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.cyan,

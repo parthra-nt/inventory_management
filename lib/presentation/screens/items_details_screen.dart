@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/constants/app_constant.dart';
+import 'package:untitled/presentation/widgets/stock_dialog.dart';
 import 'package:untitled/providers/item_page_provider.dart';
 
 class ItemDetailsScreen extends StatefulWidget {
@@ -15,9 +15,9 @@ class ItemDetailsScreen extends StatefulWidget {
   });
 
   final String productName;
-  final String quantity;
+  final int quantity;
   final String imageUrl;
-  final String id;
+  final int id;
 
   @override
   State<ItemDetailsScreen> createState() => _ItemDetailsScreenState();
@@ -142,15 +142,19 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                             () => provider.bottomSheet1(
                               context,
                               widget.id,
-                              () => stockDialog(
-                                widget.productName,
-                                provider.quantity.toString(),
+                              () => StockDialog(
                                 isStockIn: true,
+                                stock: stock,
+                                name: widget.productName,
+                                quantity: provider.quantity,
+                                id: widget.id,
                               ),
-                              () => stockDialog(
-                                widget.productName,
-                                provider.quantity.toString(),
+                              () => StockDialog(
                                 isStockIn: false,
+                                name: widget.productName,
+                                quantity: provider.quantity,
+                                id: widget.id,
+                                stock: stock,
                               ),
                             ),
                         child: Container(
@@ -181,67 +185,6 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget stockDialog(String name, String quantity, {bool isStockIn = true}) {
-    var provider = Provider.of<ItemPageProvider>(context, listen: false);
-    return AlertDialog(
-      title:
-          isStockIn
-              ? Text("Enter The Quantity to Add Stock")
-              : Text("Enter The Quantity to Remove from Stock"),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      actions: [
-        TextField(
-          controller: stock,
-          decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                width: 1,
-                color: CupertinoColors.activeBlue,
-              ),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(width: 1, color: Colors.black),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                width: 1,
-                color: CupertinoColors.activeBlue,
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton(
-            onPressed: () async {
-              if (stock.text.isEmpty || int.tryParse(stock.text) == null) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text("Enter valid quantity")));
-                return;
-              }
-              var input = int.parse(stock.text);
-              var q = int.parse(quantity);
-              await provider.updateStock(
-                q,
-                input,
-                name,
-                widget.id,
-                stockIn: isStockIn,
-              );
-              Navigator.pop(context);
-              stock.clear();
-            },
-            child: Text("Save"),
-          ),
-        ),
-      ],
     );
   }
 }

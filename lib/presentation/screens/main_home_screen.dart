@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/constants/app_constant.dart';
-import 'package:untitled/presentation/screens/add_item_screen.dart';
 import 'package:untitled/presentation/screens/home/dashboard_screen.dart';
 import 'package:untitled/presentation/screens/items_page.dart';
 
@@ -13,7 +12,7 @@ class MainHomeScreen extends StatefulWidget {
 
 class _MainHomeScreenState extends State<MainHomeScreen> {
   int selectedIndex = 0;
-  List<Widget> destinations = [DashboardScreen(), ItemsPage(), AddItemScreen()];
+  List<Widget> destinations = [DashboardScreen(), ItemsPage()];
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +34,6 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                     NavigationRailDestination(
                       icon: Icon(Icons.inventory_2),
                       label: Text("Items"),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.add),
-                      label: Text("Add Item"),
                     ),
                   ],
                   selectedIndex: selectedIndex,
