@@ -35,93 +35,79 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Consumer<DashboardProvider>(
       builder:
-          (context, provider, child) => LayoutBuilder(
-            builder: (context, constraints) {
-              final maxWidth =
-                  constraints.maxWidth < 800 ? 800 : constraints.maxWidth;
-              double height =
-                  constraints.maxHeight < 400 ? 400 : constraints.maxHeight;
-              return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: maxWidth > 800 ? 500.w : 50.w,
-                    vertical: 0.05.sh,
+          (context, provider, child) => SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+              child: Column(
+                children: [
+                  /// Count Container
+                  Container(
+                    height: 120.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      borderRadius: BorderRadius.circular(15.r),
+                    ),
+                    padding: EdgeInsets.only(left: 18.w, top: 12.h),
+                    child: PageView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return CountColumn(
+                          title: "Today",
+                          date: DateTime.now(),
+                          totalStock: provider.totalStock,
+                          totalStockIn: provider.totalStockIn,
+                          totalStockOut: provider.totalStockOut,
+                        );
+                      },
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      /// Count Container
-                      Container(
-                        height: maxWidth > 800 ? 0.12.sh : 0.1.sh,
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryColor,
-                          borderRadius: BorderRadius.circular(15.r),
-                        ),
-                        padding: EdgeInsets.only(left: 18.w, top: 12.h),
-                        child: PageView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return CountColumn(
-                              title: "Today",
-                              date: DateTime.now(),
-                              totalStock: provider.totalStock,
-                              totalStockIn: provider.totalStockIn,
-                              totalStockOut: provider.totalStockOut,
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
+                  SizedBox(height: 20.h),
 
-                      ///title and add item button
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: 5.w,
-                          top: 12.w,
-                          bottom: 12.w,
+                  ///title and add item button
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 5.w,
+                      top: 12.w,
+                      bottom: 12.w,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Items",
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.none,
+                          ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Items",
-                              style: TextStyle(
-                                fontSize: maxWidth > 800 ? 20.sp : 14.sp,
-                                fontWeight: FontWeight.w500,
-                                decoration: TextDecoration.none,
+                      ],
+                    ),
+                  ),
+                  provider.isLoading
+                      ? CircularProgressIndicator()
+                      : provider.productList?.isEmpty ?? true
+                      ? Text("Not Data")
+                      : SingleChildScrollView(
+                        child: ListView.builder(
+                          itemCount: provider.productList?.length,
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder:
+                              (context, index) => ItemList(
+                                imageUrl:
+                                    provider.productList![index]['image_url'],
+                                itemCount:
+                                    provider.productList![index]['quantity'],
+                                itemName: provider.productList![index]['name'],
                               ),
-                            ),
-                          ],
                         ),
                       ),
-                      provider.isLoading
-                          ? CircularProgressIndicator()
-                          : provider.productList?.isEmpty ?? true
-                          ? Text("Not Data")
-                          : SingleChildScrollView(
-                            child: ListView.builder(
-                              itemCount: provider.productList?.length,
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder:
-                                  (context, index) => ItemList(
-                                    imageUrl:
-                                        provider
-                                            .productList![index]['image_url'],
-                                    itemCount:
-                                        provider
-                                            .productList![index]['quantity'],
-                                    itemName:
-                                        provider.productList![index]['name'],
-                                  ),
-                            ),
-                          ),
-                    ],
-                  ),
-                ),
-              );
-            },
+                ],
+              ),
+            ),
           ),
     );
   }
