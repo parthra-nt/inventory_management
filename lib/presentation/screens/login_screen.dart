@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           SizedBox(
-                            width: 300,
+                            width: 300.w,
                             child: TextFormField(
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -70,16 +70,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               controller: provider.emailController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(width: 1),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  borderSide: BorderSide(width: 1.w),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(width: 1),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  borderSide: BorderSide(width: 1.w),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(width: 1),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  borderSide: BorderSide(width: 1.w),
                                 ),
                                 labelText: 'Email',
                                 hintText: "sample@gmail.com",
@@ -88,9 +88,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 12, bottom: 12),
+                            padding: EdgeInsets.only(top: 12.h, bottom: 12.h),
                             child: SizedBox(
-                              width: 300,
+                              width: 300.w,
                               child: TextFormField(
                                 obscureText: provider.isObscure,
                                 validator: (value) {
@@ -114,16 +114,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                             icon: Icon(CupertinoIcons.eye_fill),
                                           ),
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(width: 1),
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    borderSide: BorderSide(width: 1.h),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(width: 1),
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    borderSide: BorderSide(width: 1.w),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(width: 1),
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    borderSide: BorderSide(width: 1.w),
                                   ),
                                   labelText: 'Password',
                                 ),
