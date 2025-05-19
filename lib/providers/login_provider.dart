@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled/auth/auth_service.dart';
 import 'package:untitled/presentation/screens/main_home_screen.dart';
 
@@ -10,67 +9,32 @@ class LoginProvider extends ChangeNotifier {
   final otpController = TextEditingController();
   Timer? timer;
   int timeRemaining = 0;
-  bool otpSent = false;
+  bool isObscure = true;
   bool loading = false;
 
-  Future<void> sendOtp(BuildContext context) async {
+  void obscure() {
+    isObscure = !isObscure;
+    notifyListeners();
+  }
+
+  Future<void> verifyEmailPassword(BuildContext context) async {
     loading = true;
     notifyListeners();
     try {
-      var response = await AuthService().supabase.auth.signInWithOtp(
-        email: emailController.text,
-      );
-      otpSent = true;
-      timeRemaining == 0 ? startTimer() : null;
-      notifyListeners();
-      showOtpSentPopup(context);
-      return response;
-    } catch (e) {
-      showError(e.toString(), context);
-      print(e);
-    } finally {
-      loading = false;
-      notifyListeners();
-    }
-  }
-
-  void startTimer() {
-    timer?.cancel(); // Cancel any existing timer
-    timeRemaining = 60;
-    notifyListeners();
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (timeRemaining == 0) {
-        timer.cancel();
-      } else {
-        timeRemaining--;
-        notifyListeners();
-      }
-    });
-  }
-
-  Future<void> verifyOtp(BuildContext context) async {
-    loading = true;
-    notifyListeners();
-    try {
-      final response = await AuthService().supabase.auth.verifyOTP(
-        type: OtpType.email,
-        token: otpController.text.trim(),
+      await AuthService().supabase.auth.signInWithPassword(
         email: emailController.text.trim(),
+        password: otpController.text.trim(),
       );
-
-      if (response.session != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => MainHomeScreen()),
-        );
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Login successful')));
-      } else {
-        showError("Verification failed", context);
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => MainHomeScreen()),
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Login successful')));
     } catch (e) {
-      showError(e.toString(), context);
+      print(e);
+      showError("Please Enter Registered Email or Check The Password", context);
     } finally {
       loading = false;
       notifyListeners();
