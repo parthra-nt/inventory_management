@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,11 +11,11 @@ import 'package:untitled/providers/dashboard_provider.dart';
 import 'package:untitled/providers/item_page_provider.dart';
 import 'package:untitled/providers/login_provider.dart';
 
+const supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
+const supabaseKey = String.fromEnvironment('SUPABASE_KEY', defaultValue: '');
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
-  String supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
-  String supabaseKey = dotenv.env['SUPABASE_KEY'] ?? '';
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseKey);
   runApp(MyApp());
 }
