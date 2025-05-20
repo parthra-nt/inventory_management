@@ -24,7 +24,7 @@ class ItemDetailsScreen extends StatefulWidget {
 }
 
 class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
-  Future<void> fetchAllDashboardData() async {
+  Future<void> fetchItmesAllData() async {
     final provider = Provider.of<ItemsDetailProvider>(context, listen: false);
     await provider.readTransactions(context);
   }
@@ -35,9 +35,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => fetchAllDashboardData(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => fetchItmesAllData());
   }
 
   @override
@@ -58,115 +56,109 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : RefreshIndicator(
-                    onRefresh: fetchAllDashboardData,
-                    child: SingleChildScrollView(
+                    onRefresh: fetchItmesAllData,
+                    child: ListView(
                       padding: EdgeInsets.symmetric(
                         horizontal: 20.w,
                         vertical: 20.h,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              buildImageSection(provider),
-                              SizedBox(width: 16.w),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      provider.isUpdatedName
-                                          ? provider.productName
-                                          : widget.productName,
-                                      style: TextStyle(
-                                        fontSize: 24.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildImageSection(provider),
+                            SizedBox(width: 16.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    provider.isUpdatedName
+                                        ? provider.productName
+                                        : widget.productName,
+                                    style: TextStyle(
+                                      fontSize: 24.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
                                     ),
-                                    SizedBox(height: 4.h),
-                                    Text(
-                                      'Stock: ${widget.quantity}',
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey[700],
-                                      ),
-                                    ),
-                                    SizedBox(height: 12.h),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.primaryColor
-                                            .withOpacity(0.1),
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10.r,
-                                          ),
-                                        ),
-                                      ),
-                                      onPressed:
-                                          () => provider.bottomSheet2(
-                                            context,
-                                            provider.productName,
-                                            widget.id,
-                                            widget.imageUrl,
-                                            nameUpdate,
-                                          ),
-                                      child: Text(
-                                        "Edit Item",
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
-                                          color: AppColors.primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 30.h),
-                          Text(
-                            'Transaction History',
-                            style: TextStyle(
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                          if (provider.transactionList?.isEmpty ?? true)
-                            Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 40.h),
-                                child: Text(
-                                  'No Transactions Available',
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    color: Colors.grey,
                                   ),
+                                  SizedBox(height: 20.h),
+                                  Text(
+                                    'Stock: ${widget.quantity}',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryColor
+                                    .withOpacity(0.1),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.r),
                                 ),
                               ),
-                            )
-                          else
-                            ListView.builder(
-                              itemCount: provider.transactionList?.length,
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                final item = provider.transactionList![index];
-                                return TransactionWidget(
-                                  date: item['timestamp'],
-                                  quantity: item['quantity'],
-                                  isStockIN: item['type'],
-                                );
-                              },
+                              onPressed:
+                                  () => provider.bottomSheet2(
+                                    context,
+                                    provider.productName,
+                                    widget.id,
+                                    widget.imageUrl,
+                                    nameUpdate,
+                                  ),
+                              child: Text(
+                                "Edit Item",
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
                             ),
-                        ],
-                      ),
+                          ],
+                        ),
+                        SizedBox(height: 30.h),
+                        Text(
+                          'Transaction History',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        if (provider.transactionList?.isEmpty ?? true)
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 40.h),
+                              child: Text(
+                                'No Transactions Available',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          ListView.builder(
+                            itemCount: provider.transactionList?.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              final item = provider.transactionList![index];
+                              return TransactionWidget(
+                                date: item['timestamp'],
+                                quantity: item['quantity'],
+                                isStockIN: item['type'],
+                              );
+                            },
+                          ),
+                      ],
                     ),
                   ),
         );
