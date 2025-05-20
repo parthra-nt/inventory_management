@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/constants/app_constant.dart';
-import 'package:untitled/presentation/screens/main_home_screen.dart';
+import 'package:untitled/presentation/screens/dashboard_screen.dart';
 import 'package:untitled/providers/add_item_provider.dart';
 
 class AddItemScreen extends StatefulWidget {
@@ -18,171 +19,157 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Widget build(BuildContext context) {
     return Consumer<AddItemProvider>(
       builder: (context, provider, child) {
-        final height = MediaQuery.sizeOf(context).height;
-        final width = MediaQuery.sizeOf(context).width;
         return Scaffold(
-          body: Center(
-            child: Container(
-              height: height * 0.36,
-              width: width * 0.625,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Color(0xffeaeaea),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 100.h,
-                        width: 100.w,
-                        child:
-                            provider.image != null
-                                ? Image.memory(
-                                  provider.image!,
-                                  fit: BoxFit.cover,
-                                )
-                                : Image.asset(
-                                  "assets/images/items/empty_image.png",
-                                  fit: BoxFit.fitHeight,
-                                ),
-                      ),
-                      GestureDetector(
-                        onTap: provider.pickImage,
-                        child: Container(
-                          height: 50.h,
-                          width: 100.w,
-                          margin: EdgeInsets.only(left: 100.w),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.r),
-                            color: Colors.black12,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Add Image",
-                              style: TextStyle(
-                                color: CupertinoColors.systemBlue,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 50.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Item Name", style: TextStyle(fontSize: 20.sp)),
-                        Padding(
-                          padding: EdgeInsets.only(right: 30.w),
-                          child: SizedBox(
-                            width: 200.w,
-                            height: 30.h,
-                            child: TextField(
-                              controller: provider.name,
-                              decoration: InputDecoration(
-                                hintText: "Enter Item Name",
-                                border: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(thickness: 1, indent: 1),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Quantity", style: TextStyle(fontSize: 20.sp)),
-                      Padding(
-                        padding: EdgeInsets.only(right: 30.w),
-                        child: SizedBox(
-                          width: 200.w,
-                          height: 30.h,
-                          child: TextField(
-                            controller: provider.quantity,
-                            decoration: InputDecoration(
-                              hintText: "Enter Quantity",
-                              border: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Divider(thickness: 1, indent: 1),
-                  GestureDetector(
-                    onTap: () async {
-                      await provider.uploadImage(
-                        provider.image,
-                        provider.fileName,
-                      );
-                      await provider.addItemTable();
-                      await showDialog(
-                        context: context,
-                        builder:
-                            (context) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              title: Text("Item Added Successfully"),
-                              actions: [
-                                ElevatedButton(
-                                  onPressed:
-                                      () => Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => MainHomeScreen(),
-                                        ),
-                                      ),
-                                  child: Text("ok"),
-                                ),
-                              ],
-                            ),
-                      );
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.scaffoldBackColor,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black54,
-                            spreadRadius: 0.5,
-                            blurRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        "Save",
-                        style: TextStyle(
-                          color: CupertinoColors.activeBlue,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildImageSection(provider),
+                SizedBox(height: 24.h),
+                _buildTextField("Item Name", "Enter Item Name", provider.name),
+                SizedBox(height: 16.h),
+                _buildTextField(
+                  "Quantity",
+                  "Enter Quantity",
+                  provider.quantity,
+                  isNumber: true,
+                ),
+                SizedBox(height: 32.h),
+                Center(child: _buildSaveButton(context, provider)),
+              ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildImageSection(AddItemProvider provider) {
+    return Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10.r),
+          child: SizedBox(
+            height: 80.h,
+            width: 80.h,
+            child:
+                provider.image != null
+                    ? Image.memory(provider.image!, fit: BoxFit.cover)
+                    : SvgPicture.asset(
+                      "assets/images/empty_image.svg",
+                      fit: BoxFit.cover,
+                    ),
+          ),
+        ),
+        SizedBox(width: 16.w),
+        GestureDetector(
+          onTap: provider.pickImage,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            decoration: BoxDecoration(
+              color: CupertinoColors.systemGrey5,
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Text(
+              "Add Image",
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: CupertinoColors.activeBlue,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField(
+    String label,
+    String hint,
+    TextEditingController controller, {
+    bool isNumber = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 8.h),
+        TextField(
+          controller: controller,
+          keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+          style: TextStyle(fontSize: 20.sp),
+          decoration: InputDecoration(
+            hintText: hint,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 12.w,
+              vertical: 10.h,
+            ),
+            hintStyle: TextStyle(color: Colors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.r),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.r),
+              borderSide: BorderSide(color: AppColors.primaryColor),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSaveButton(BuildContext context, AddItemProvider provider) {
+    return GestureDetector(
+      onTap: () async {
+        await provider.uploadImage(provider.image, provider.fileName);
+        await provider.addItemTable();
+        await showDialog(
+          context: context,
+          builder:
+              (_) => AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                title: const Text("Item Added Successfully"),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => DashboardScreen()),
+                      );
+                    },
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 14.h),
+        decoration: BoxDecoration(
+          color: AppColors.primaryColor,
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        child: Center(
+          child: Text(
+            "Save",
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

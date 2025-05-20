@@ -2,34 +2,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
-import 'package:untitled/providers/item_page_provider.dart';
+import 'package:untitled/providers/dashboard_provider.dart';
 
 class StockDialog extends StatelessWidget {
-  StockDialog({
+  const StockDialog({
     super.key,
     this.isStockIn = true,
     required this.name,
     required this.stock,
     required this.quantity,
     required this.id,
+    required this.provider,
   });
 
-  bool isStockIn;
+  final bool isStockIn;
   final TextEditingController stock;
   final String name;
   final int quantity;
   final int id;
+  final DashboardProvider provider;
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<ItemPageProvider>(context, listen: false);
     return AlertDialog(
       backgroundColor: Colors.white,
       title:
           isStockIn
               ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(6),
@@ -44,11 +44,14 @@ class StockDialog extends StatelessWidget {
                       theme: SvgTheme(currentColor: Color(0xff3c75ef)),
                     ),
                   ),
-                  Text("Enter Stock In quantity"),
+                  Text(
+                    "Enter Stock In quantity",
+                    style: TextStyle(fontSize: 20.sp),
+                  ),
                 ],
               )
               : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(6),
@@ -63,7 +66,10 @@ class StockDialog extends StatelessWidget {
                       theme: SvgTheme(currentColor: Color(0xffdc3a3a)),
                     ),
                   ),
-                  Text("Enter Stock Out quantity"),
+                  Text(
+                    "Enter Stock Out quantity",
+                    style: TextStyle(fontSize: 20.sp),
+                  ),
                 ],
               ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
