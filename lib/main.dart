@@ -18,8 +18,7 @@ const supabaseKey = String.fromEnvironment('SUPABASE_KEY', defaultValue: '');
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-  String supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
-  String supabaseKey = dotenv.env['SUPABASE_KEY'] ?? '';
+
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseKey);
   runApp(MyApp());
 }
