@@ -29,7 +29,7 @@ class StockDialog extends StatelessWidget {
       title:
           isStockIn
               ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(6),
@@ -44,11 +44,14 @@ class StockDialog extends StatelessWidget {
                       theme: SvgTheme(currentColor: Color(0xff3c75ef)),
                     ),
                   ),
-                  Text("Enter Stock In quantity"),
+                  Text(
+                    "Enter Stock In quantity",
+                    style: TextStyle(fontSize: 20.sp),
+                  ),
                 ],
               )
               : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(6),
@@ -63,7 +66,10 @@ class StockDialog extends StatelessWidget {
                       theme: SvgTheme(currentColor: Color(0xffdc3a3a)),
                     ),
                   ),
-                  Text("Enter Stock Out quantity"),
+                  Text(
+                    "Enter Stock Out quantity",
+                    style: TextStyle(fontSize: 20.sp),
+                  ),
                 ],
               ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

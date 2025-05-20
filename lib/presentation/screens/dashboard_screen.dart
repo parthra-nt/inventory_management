@@ -48,7 +48,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 Text(
                                   "Items",
                                   style: TextStyle(
-                                    fontSize: 20.sp,
+                                    fontSize: 30.sp,
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.none,
                                   ),
@@ -64,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   child: Text(
                                     "+ Add Items",
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 25.sp,
                                       color: CupertinoColors.activeBlue,
                                     ),
                                   ),
