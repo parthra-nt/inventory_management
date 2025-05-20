@@ -33,16 +33,3 @@ class AppTheme {
     ),
   );
 }
-
-abstract class AppTextTheme {
-  static final TextStyle cardBoldTextStyle = TextStyle(
-    color: Colors.white,
-    decoration: TextDecoration.none,
-    fontWeight: FontWeight.bold,
-  );
-  static final TextStyle cardSmallTextStyle = TextStyle(
-    color: AppColors.cardTextColor,
-    decoration: TextDecoration.none,
-    fontWeight: FontWeight.w800,
-  );
-}

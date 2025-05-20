@@ -13,138 +13,179 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Consumer<LoginProvider>(
       builder:
-          (context, provider, child) => Scaffold(
-            body: Stack(
-              children: [
-                Center(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      height: 550.h,
-                      width: 600.w,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black45,
-                            blurRadius: 1,
-                            spreadRadius: 0.5,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "LOGIN",
-                            style: TextStyle(
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 30,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Login to Manage Your Inventory",
-                              style: TextStyle(
-                                color: AppColors.cardTextColor,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 300.w,
-                            child: TextFormField(
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please Enter Email';
-                                }
-                                return null;
-                              },
-                              controller: provider.emailController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.r),
-                                  borderSide: BorderSide(width: 1.w),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.r),
-                                  borderSide: BorderSide(width: 1.w),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.r),
-                                  borderSide: BorderSide(width: 1.w),
-                                ),
-                                labelText: 'Email',
-                                hintText: "sample@gmail.com",
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 12.h, bottom: 12.h),
-                            child: SizedBox(
-                              width: 300.w,
-                              child: TextFormField(
-                                obscureText: provider.isObscure,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter Valid Password';
-                                  }
-                                  return null;
-                                },
-                                controller: provider.otpController,
-                                decoration: InputDecoration(
-                                  suffixIcon:
-                                      provider.isObscure
-                                          ? IconButton(
-                                            onPressed: provider.obscure,
-                                            icon: Icon(
-                                              CupertinoIcons.eye_slash_fill,
-                                            ),
-                                          )
-                                          : IconButton(
-                                            onPressed: provider.obscure,
-                                            icon: Icon(CupertinoIcons.eye_fill),
-                                          ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: BorderSide(width: 1.h),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: BorderSide(width: 1.w),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: BorderSide(width: 1.w),
-                                  ),
-                                  labelText: 'Password',
-                                ),
-                              ),
-                            ),
-                          ),
-                          provider.loading
-                              ? const CircularProgressIndicator()
-                              : ElevatedButton(
-                                onPressed:
-                                    () async => await provider
-                                        .verifyEmailPassword(context),
-                                child: Text('Login'),
-                              ),
-                        ],
+          (context, provider, child) => LayoutBuilder(
+            builder: (context, constraints) {
+              final maxWidth = constraints.maxWidth;
+
+              // Determine width based on screen size
+              double containerWidth;
+              if (maxWidth < 600) {
+                // Small screen (mobile) — use 90% width
+                containerWidth = maxWidth * 0.9;
+              } else if (maxWidth < 900) {
+                // Medium screen (tablet) — use 50% width
+                containerWidth = maxWidth * 0.5;
+              } else {
+                // Large screen (desktop) — limit max width for readability
+                containerWidth = 400.w; // Fixed width scaled for large screens
+              }
+
+              return Scaffold(
+                body: Stack(
+                  children: [
+                    Container(
+                      width: maxWidth,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFE3F2FD), Color(0xFF90CAF9)],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                       ),
                     ),
-                  ),
+                    Center(
+                      child:
+                          provider.loading
+                              ? const CircularProgressIndicator()
+                              : SingleChildScrollView(
+                                child: Container(
+                                  width: containerWidth,
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: 24.w,
+                                  ),
+                                  padding: EdgeInsets.all(24.w),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20.r),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 8,
+                                        offset: Offset(2, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          "LOGIN",
+                                          style: TextStyle(
+                                            color: AppColors.primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 30.sp,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.h),
+                                        Text(
+                                          "Login to Manage Your Inventory",
+                                          style: TextStyle(
+                                            color: AppColors.cardTextColor,
+                                            fontSize: 16.sp,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20.h),
+                                        TextFormField(
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please enter email';
+                                            }
+                                            return null;
+                                          },
+                                          controller: provider.emailController,
+                                          decoration: InputDecoration(
+                                            prefixIcon: Icon(
+                                              Icons.email_outlined,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.r),
+                                            ),
+                                            labelText: 'Email',
+                                            hintText: 'sample@gmail.com',
+                                          ),
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        TextFormField(
+                                          obscureText: provider.isObscure,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please enter password';
+                                            }
+                                            return null;
+                                          },
+                                          controller: provider.otpController,
+                                          decoration: InputDecoration(
+                                            prefixIcon: Icon(
+                                              Icons.lock_outline,
+                                            ),
+                                            suffixIcon: IconButton(
+                                              icon: Icon(
+                                                provider.isObscure
+                                                    ? CupertinoIcons
+                                                        .eye_slash_fill
+                                                    : CupertinoIcons.eye_fill,
+                                              ),
+                                              onPressed: provider.obscure,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.r),
+                                            ),
+                                            labelText: 'Password',
+                                          ),
+                                        ),
+                                        SizedBox(height: 12.h),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: ElevatedButton(
+                                            onPressed:
+                                                () async => await provider
+                                                    .verifyEmailPassword(
+                                                      context,
+                                                    ),
+                                            style: ElevatedButton.styleFrom(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 14.h,
+                                              ),
+                                              backgroundColor:
+                                                  AppColors.primaryColor,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.r),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              'Login',
+                                              style: TextStyle(
+                                                fontSize: 18.sp,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
     );
   }

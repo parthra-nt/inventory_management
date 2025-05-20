@@ -2,37 +2,23 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mime/mime.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:untitled/auth/auth_service.dart';
-import 'package:untitled/presentation/screens/main_home_screen.dart';
+import 'package:untitled/presentation/screens/dashboard_screen.dart';
 import 'package:untitled/presentation/widgets/bottom_sheet_option.dart';
 import 'package:untitled/presentation/widgets/delete_dialog.dart';
-import 'package:untitled/providers/add_item_provider.dart';
 
-class ItemPageProvider extends ChangeNotifier {
+class ItemsDetailProvider extends ChangeNotifier {
   final service = AuthService().supabase;
-  final AddItemProvider addItemProvider = AddItemProvider();
   Uint8List? image;
   String? fileName;
   String publicUrl = '';
-  List? itemsList;
+  List? transactionList;
   bool isLoading = false;
-  bool isUpdateImage = false;
+  bool isUpdatedImage = false;
+  bool isUpdatedName = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  int _quantity = 0;
-
-  int get quantity => _quantity;
-
-  ItemPageProvider(this._quantity, this._productName);
-
-  set quantity(int value) {
-    _quantity = value;
-    notifyListeners();
-  }
-
   String _productName = '';
 
   String get productName => _productName;
@@ -40,124 +26,6 @@ class ItemPageProvider extends ChangeNotifier {
   set productName(String name) {
     _productName = name;
     notifyListeners();
-  }
-
-  void bottomSheet1(
-    BuildContext context,
-    int id,
-    Function() stockIn,
-    Function() stockOut,
-  ) {
-    showModalBottomSheet(
-      context: scaffoldKey.currentContext!,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      backgroundColor: Colors.white,
-      builder:
-          (context) => Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40.w,
-                  height: 5.h,
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    showDialog(
-                      context: context,
-                      builder: (context) => stockIn(),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(12.r),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 12.h,
-                      horizontal: 8.w,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffe6f0ff),
-                            shape: BoxShape.circle,
-                          ),
-                          child: SvgPicture.asset(
-                            "assets/images/stockIn.svg",
-                            height: 20.h,
-                            width: 20.w,
-                            theme: SvgTheme(currentColor: Color(0xff3c75ef)),
-                          ),
-                        ),
-                        SizedBox(width: 16.w),
-                        Text(
-                          "Stock In",
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Divider(height: 32.h, thickness: 1, color: Colors.black12),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    showDialog(
-                      context: context,
-                      builder: (context) => stockOut(),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(12.r),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 12.h,
-                      horizontal: 8.w,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffffe6e6),
-                            shape: BoxShape.circle,
-                          ),
-                          child: SvgPicture.asset(
-                            "assets/images/stockOut.svg",
-                            height: 20.h,
-                            width: 20.w,
-                            theme: SvgTheme(currentColor: Color(0xffdc3a3a)),
-                          ),
-                        ),
-                        SizedBox(width: 16.w),
-                        Text(
-                          "Stock Out",
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-    );
   }
 
   void bottomSheet2(
@@ -238,8 +106,6 @@ class ItemPageProvider extends ChangeNotifier {
                 ),
 
                 Divider(thickness: 1, color: Colors.black12),
-
-                /// Edit Image
                 BottomSheetOption(
                   icon: Icons.image_outlined,
                   label: "Edit Image",
@@ -292,33 +158,6 @@ class ItemPageProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> updateStock(
-    int quantity,
-    int input,
-    String productName,
-    int id, {
-    bool stockIn = true,
-  }) async {
-    try {
-      final value = stockIn ? quantity + input : quantity - input;
-      await service
-          .from('products')
-          .update({'quantity': value})
-          .eq('name', productName)
-          .select()
-          .single();
-      this.quantity = value;
-      await AuthService().supabase.from('transactions').insert({
-        'product_id': id,
-        'quantity': input,
-        'type': stockIn ? 'in' : 'out',
-      });
-      notifyListeners();
-    } catch (e) {
-      print('Error Updating $e');
-    }
-  }
-
   Future<void> updateName(String name, int id) async {
     try {
       await service
@@ -328,6 +167,7 @@ class ItemPageProvider extends ChangeNotifier {
           .select()
           .single();
       productName = name;
+      isUpdatedName = true;
       notifyListeners();
     } catch (e) {
       print('Error Updating Name $e');
@@ -340,7 +180,7 @@ class ItemPageProvider extends ChangeNotifier {
       await service.from('products').delete().eq('id', id);
       await Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => MainHomeScreen()),
+        MaterialPageRoute(builder: (_) => DashboardScreen()),
       );
       ScaffoldMessenger.of(
         context,
@@ -350,18 +190,22 @@ class ItemPageProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> readItems() async {
+  Future<void> readTransactions(BuildContext context) async {
     isLoading = true;
     notifyListeners();
     try {
-      final response = await service.from('products').select();
-      itemsList = response;
+      final response = await service.from('transactions').select('*');
+      transactionList = response;
+      notifyListeners();
     } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
       print("Error Fetching List $e");
-      itemsList = [];
+      transactionList = [];
+      notifyListeners();
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-    isLoading = false;
-    notifyListeners();
   }
 
   Future<void> deleteImage(String imageURL) async {
@@ -375,7 +219,7 @@ class ItemPageProvider extends ChangeNotifier {
 
       final filePath = segments.sublist(bucketPathIndex).join('/');
       await service.storage.from('image').remove(['uploads/$filePath']);
-      print("Od Image Deleted Successfully");
+      print("Old Image Deleted Successfully");
     } catch (e) {
       print("Error Deleting Image from Bucket: $e");
     }
@@ -389,7 +233,7 @@ class ItemPageProvider extends ChangeNotifier {
           .eq('id', id)
           .select()
           .single();
-      isUpdateImage = true;
+      isUpdatedImage = true;
       notifyListeners();
     } catch (e) {
       print("Error Updating Image: $e");
