@@ -60,8 +60,6 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         double screenWidth = constraints.maxWidth;
-
-                        // Define breakpoints
                         bool isMobile = screenWidth < 600;
                         bool isTablet =
                             screenWidth >= 600 && screenWidth <= 1024;
@@ -78,127 +76,67 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                             ),
                             child: ListView(
                               children: [
-                                isMobile
-                                    ? Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        buildImageSection(provider),
-                                        SizedBox(height: 16.h),
-                                        Text(
-                                          provider.isUpdatedName
-                                              ? provider.productName
-                                              : widget.productName,
-                                          style: TextStyle(
-                                            fontSize: 22.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                        SizedBox(height: 12.h),
-                                        Text(
-                                          'Stock: ${widget.quantity}',
-                                          style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.grey[700],
-                                          ),
-                                        ),
-                                        SizedBox(height: 12.h),
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: AppColors
-                                                  .primaryColor
-                                                  .withOpacity(0.1),
-                                              elevation: 0,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.r),
-                                              ),
-                                            ),
-                                            onPressed:
-                                                () => provider.bottomSheet2(
-                                                  context,
-                                                  provider.productName,
-                                                  widget.id,
-                                                  widget.imageUrl,
-                                                  nameUpdate,
-                                                ),
-                                            child: Text(
-                                              "Edit Item",
-                                              style: TextStyle(
-                                                fontSize: 16.sp,
-                                                color: AppColors.primaryColor,
-                                              ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    buildImageSection(provider),
+                                    SizedBox(width: 20.w),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            provider.isUpdatedName
+                                                ? provider.productName
+                                                : widget.productName,
+                                            style: TextStyle(
+                                              fontSize: 24.sp,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87,
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    )
-                                    : Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        buildImageSection(provider),
-                                        SizedBox(width: 20.w),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                provider.isUpdatedName
-                                                    ? provider.productName
-                                                    : widget.productName,
-                                                style: TextStyle(
-                                                  fontSize: 24.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
-                                              SizedBox(height: 16.h),
-                                              Text(
-                                                'Stock: ${widget.quantity}',
-                                                style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: AppColors
-                                                .primaryColor
-                                                .withOpacity(0.1),
-                                            elevation: 0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.r),
-                                            ),
-                                          ),
-                                          onPressed:
-                                              () => provider.bottomSheet2(
-                                                context,
-                                                provider.productName,
-                                                widget.id,
-                                                widget.imageUrl,
-                                                nameUpdate,
-                                              ),
-                                          child: Text(
-                                            "Edit Item",
+                                          SizedBox(height: 16.h),
+                                          Text(
+                                            'Stock: ${widget.quantity}',
                                             style: TextStyle(
                                               fontSize: 16.sp,
-                                              color: AppColors.primaryColor,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey[700],
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primaryColor
+                                            .withOpacity(0.1),
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10.r,
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed:
+                                          () => provider.bottomSheet2(
+                                            context,
+                                            provider.productName,
+                                            widget.id,
+                                            widget.imageUrl,
+                                            nameUpdate,
+                                          ),
+                                      child: Text(
+                                        "Edit Item",
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          color: AppColors.primaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 SizedBox(height: 30.h),
                                 Text(
                                   'Transaction History',
