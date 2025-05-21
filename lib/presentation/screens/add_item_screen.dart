@@ -19,28 +19,49 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Widget build(BuildContext context) {
     return Consumer<AddItemProvider>(
       builder: (context, provider, child) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildImageSection(provider),
-                SizedBox(height: 24.h),
-                _buildTextField("Item Name", "Enter Item Name", provider.name),
-                SizedBox(height: 16.h),
-                _buildTextField(
-                  "Quantity",
-                  "Enter Quantity",
-                  provider.quantity,
-                  isNumber: true,
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            double maxWidth = constraints.maxWidth;
+            double contentWidth = maxWidth > 800 ? 700 : maxWidth;
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: contentWidth,
+                      child: _buildImageSection(provider),
+                    ),
+                    SizedBox(height: 24.h),
+                    SizedBox(
+                      width: contentWidth,
+                      child: _buildTextField(
+                        "Item Name",
+                        "Enter Item Name",
+                        provider.name,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    SizedBox(
+                      width: contentWidth,
+                      child: _buildTextField(
+                        "Quantity",
+                        "Enter Quantity",
+                        provider.quantity,
+                        isNumber: true,
+                      ),
+                    ),
+                    SizedBox(height: 32.h),
+                    Center(
+                      child: _buildSaveButton(context, provider, contentWidth),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 32.h),
-                Center(child: _buildSaveButton(context, provider)),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -125,7 +146,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
-  Widget _buildSaveButton(BuildContext context, AddItemProvider provider) {
+  Widget _buildSaveButton(
+    BuildContext context,
+    AddItemProvider provider,
+    double width,
+  ) {
     return GestureDetector(
       onTap: () async {
         await provider.uploadImage(provider.image, provider.fileName);
@@ -153,7 +178,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         );
       },
       child: Container(
-        width: double.infinity,
+        width: width,
         padding: EdgeInsets.symmetric(vertical: 14.h),
         decoration: BoxDecoration(
           color: AppColors.primaryColor,

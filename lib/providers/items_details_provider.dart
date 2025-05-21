@@ -190,11 +190,15 @@ class ItemsDetailProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> readTransactions(BuildContext context) async {
+  Future<void> readTransactions(BuildContext context, int productId) async {
     isLoading = true;
     notifyListeners();
     try {
-      final response = await service.from('transactions').select('*');
+      final response = await service
+          .from('transactions')
+          .select('*')
+          .eq('product_id', productId)
+          .order("timestamp", ascending: false);
       transactionList = response;
       notifyListeners();
     } catch (e) {

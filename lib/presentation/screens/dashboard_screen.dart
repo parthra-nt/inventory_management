@@ -38,94 +38,113 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ? Center(child: CircularProgressIndicator())
                     : RefreshIndicator(
                       onRefresh: fetchAllDashboardData,
-                      child: ListView(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Items",
-                                  style: TextStyle(
-                                    fontSize: 30.sp,
-                                    fontWeight: FontWeight.w500,
-                                    decoration: TextDecoration.none,
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap:
-                                      () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => AddItemScreen(),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          double maxWidth = constraints.maxWidth;
+                          double contentWidth = maxWidth > 800 ? 700 : maxWidth;
+                          return Center(
+                            child: Container(
+                              width: contentWidth,
+                              child: ListView(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Items",
+                                          style: TextStyle(
+                                            fontSize: 30.sp,
+                                            fontWeight: FontWeight.w500,
+                                            decoration: TextDecoration.none,
+                                          ),
                                         ),
+                                        InkWell(
+                                          onTap:
+                                              () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (_) => AddItemScreen(),
+                                                ),
+                                              ),
+                                          child: Text(
+                                            "+ Add Items",
+                                            style: TextStyle(
+                                              fontSize: 25.sp,
+                                              color: CupertinoColors.activeBlue,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  provider.productList?.isEmpty ?? true
+                                      ? Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 40.h,
+                                          ),
+                                          child: Text(
+                                            'No Data Available',
+                                            style: TextStyle(
+                                              fontSize: 16.sp,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      : ListView.builder(
+                                        itemCount: provider.productList?.length,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemBuilder: (context, index) {
+                                          final item =
+                                              provider.productList![index];
+                                          return DashboardProductList(
+                                            imageUrl: item['image_url'],
+                                            itemCount: item['quantity'],
+                                            itemName: item['name'],
+                                            id: item['id'],
+                                            onTap1:
+                                                () => showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (context) => StockDialog(
+                                                        provider: provider,
+                                                        id: item['id'],
+                                                        quantity:
+                                                            item['quantity'],
+                                                        name: item['name'],
+                                                        isStockIn: true,
+                                                        stock: provider.stock,
+                                                      ),
+                                                ),
+                                            onTap2:
+                                                () => showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (context) => StockDialog(
+                                                        provider: provider,
+                                                        id: item['id'],
+                                                        quantity:
+                                                            item['quantity'],
+                                                        name: item['name'],
+                                                        isStockIn: false,
+                                                        stock: provider.stock,
+                                                      ),
+                                                ),
+                                          );
+                                        },
                                       ),
-                                  child: Text(
-                                    "+ Add Items",
-                                    style: TextStyle(
-                                      fontSize: 25.sp,
-                                      color: CupertinoColors.activeBlue,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          provider.productList?.isEmpty ?? true
-                              ? Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 40.h),
-                                  child: Text(
-                                    'No Data Available',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              )
-                              : ListView.builder(
-                                itemCount: provider.productList?.length,
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  final item = provider.productList![index];
-                                  return DashboardProductList(
-                                    imageUrl: item['image_url'],
-                                    itemCount: item['quantity'],
-                                    itemName: item['name'],
-                                    id: item['id'],
-                                    onTap1:
-                                        () => showDialog(
-                                          context: context,
-                                          builder:
-                                              (context) => StockDialog(
-                                                provider: provider,
-                                                id: item['id'],
-                                                quantity: item['quantity'],
-                                                name: item['name'],
-                                                isStockIn: true,
-                                                stock: provider.stock,
-                                              ),
-                                        ),
-                                    onTap2:
-                                        () => showDialog(
-                                          context: context,
-                                          builder:
-                                              (context) => StockDialog(
-                                                provider: provider,
-                                                id: item['id'],
-                                                quantity: item['quantity'],
-                                                name: item['name'],
-                                                isStockIn: false,
-                                                stock: provider.stock,
-                                              ),
-                                        ),
-                                  );
-                                },
+                                ],
                               ),
-                        ],
+                            ),
+                          );
+                        },
                       ),
                     ),
           ),

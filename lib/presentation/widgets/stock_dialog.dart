@@ -97,29 +97,37 @@ class StockDialog extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton(
-            onPressed: () async {
-              if (stock.text.isEmpty || int.tryParse(stock.text) == null) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text("Enter valid quantity")));
-                return;
-              }
-              var input = int.parse(stock.text);
-              await provider.updateStock(
-                quantity,
-                input,
-                name,
-                id,
-                stockIn: isStockIn,
-              );
-              Navigator.pop(context);
-              stock.clear();
-            },
-            child: Text("Save"),
-          ),
+        SizedBox(height: 10.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel"),
+            ),
+            SizedBox(width: 30.w),
+            ElevatedButton(
+              onPressed: () async {
+                if (stock.text.isEmpty || int.tryParse(stock.text) == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Enter valid quantity")),
+                  );
+                  return;
+                }
+                var input = int.parse(stock.text);
+                await provider.updateStock(
+                  quantity,
+                  input,
+                  name,
+                  id,
+                  stockIn: isStockIn,
+                );
+                Navigator.pop(context);
+                stock.clear();
+              },
+              child: Text("Save"),
+            ),
+          ],
         ),
       ],
     );
